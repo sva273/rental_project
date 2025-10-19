@@ -1,0 +1,2945 @@
+!!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+args:
+- !!python/name:drf_yasg.openapi.Swagger ''
+dictitems:
+  basePath: /api/v1
+  consumes:
+  - application/json
+  definitions: !!python/object/apply:collections.OrderedDict
+  - - - User
+      - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - &id001 !!python/name:drf_yasg.openapi.Schema ''
+        dictitems:
+          properties: !!python/object/apply:collections.OrderedDict
+          - - - id
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: ID
+                  type: integer
+                state:
+                  _extras__: {}
+            - - email
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: email
+                  maxLength: 254
+                  minLength: 1
+                  title: Email
+                  type: string
+                state:
+                  _extras__:
+                    max_length: 254
+                    min_length: 1
+            - - first_name
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maxLength: 150
+                  title: First name
+                  type: string
+                state:
+                  _extras__:
+                    max_length: 150
+            - - last_name
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maxLength: 150
+                  title: Last name
+                  type: string
+                state:
+                  _extras__:
+                    max_length: 150
+            - - phone_number
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  description: Номер телефона только цифры
+                  maxLength: 15
+                  title: Phone number
+                  type: string
+                  x-nullable: true
+                state:
+                  _extras__:
+                    max_length: 15
+                    x_nullable: true
+            - - role
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  enum:
+                  - tenant
+                  - landlord
+                  title: Role
+                  type: string
+                state:
+                  _extras__: {}
+            - - password
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  minLength: 1
+                  title: Password
+                  type: string
+                state:
+                  _extras__:
+                    min_length: 1
+            - - password2
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  minLength: 1
+                  title: Password2
+                  type: string
+                state:
+                  _extras__:
+                    min_length: 1
+          required:
+          - email
+          - first_name
+          - last_name
+          - password
+          - password2
+          type: object
+        state:
+          _extras__: {}
+    - - Booking
+      - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id001
+        dictitems:
+          properties: !!python/object/apply:collections.OrderedDict
+          - - - id
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: ID
+                  type: integer
+                state:
+                  _extras__: {}
+            - - listing
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Listing
+                  type: integer
+                state:
+                  _extras__: {}
+            - - listing_title
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Listing title
+                  type: string
+                state:
+                  _extras__: {}
+            - - tenant
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Tenant
+                  type: integer
+                state:
+                  _extras__: {}
+            - - tenant_email
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Tenant email
+                  type: string
+                state:
+                  _extras__: {}
+            - - start_date
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: date
+                  title: Start date
+                  type: string
+                state:
+                  _extras__: {}
+            - - end_date
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: date
+                  title: End date
+                  type: string
+                state:
+                  _extras__: {}
+            - - parking_included
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Parking included
+                  type: boolean
+                state:
+                  _extras__: {}
+            - - status
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  enum:
+                  - pending
+                  - confirmed
+                  - cancelled
+                  - rejected
+                  readOnly: true
+                  title: Status
+                  type: string
+                state:
+                  _extras__: {}
+            - - total_price
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Total price
+                  type: string
+                state:
+                  _extras__: {}
+          required:
+          - listing
+          - start_date
+          - end_date
+          type: object
+        state:
+          _extras__: {}
+    - - Listing
+      - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id001
+        dictitems:
+          properties: !!python/object/apply:collections.OrderedDict
+          - - - id
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: ID
+                  type: integer
+                state:
+                  _extras__: {}
+            - - landlord
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Landlord
+                  type: integer
+                state:
+                  _extras__: {}
+            - - landlord_email
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Landlord email
+                  type: string
+                state:
+                  _extras__: {}
+            - - title
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maxLength: 255
+                  minLength: 1
+                  title: Title
+                  type: string
+                state:
+                  _extras__:
+                    max_length: 255
+                    min_length: 1
+            - - description
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  minLength: 1
+                  title: Description
+                  type: string
+                state:
+                  _extras__:
+                    min_length: 1
+            - - country
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maxLength: 100
+                  minLength: 1
+                  title: Country
+                  type: string
+                state:
+                  _extras__:
+                    max_length: 100
+                    min_length: 1
+            - - city
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maxLength: 100
+                  minLength: 1
+                  title: City
+                  type: string
+                state:
+                  _extras__:
+                    max_length: 100
+                    min_length: 1
+            - - street
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maxLength: 100
+                  minLength: 1
+                  title: Street
+                  type: string
+                state:
+                  _extras__:
+                    max_length: 100
+                    min_length: 1
+            - - house_number
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maxLength: 10
+                  minLength: 1
+                  title: House number
+                  type: string
+                state:
+                  _extras__:
+                    max_length: 10
+                    min_length: 1
+            - - latitude
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: decimal
+                  title: Latitude
+                  type: string
+                  x-nullable: true
+                state:
+                  _extras__:
+                    x_nullable: true
+            - - longitude
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: decimal
+                  title: Longitude
+                  type: string
+                  x-nullable: true
+                state:
+                  _extras__:
+                    x_nullable: true
+            - - property_type
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  enum:
+                  - apartment
+                  - house
+                  - studio
+                  title: Property type
+                  type: string
+                state:
+                  _extras__: {}
+            - - rooms
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maximum: 4294967295
+                  minimum: 0
+                  title: Rooms
+                  type: integer
+                  x-nullable: true
+                state:
+                  _extras__:
+                    maximum: 4294967295
+                    minimum: 0
+                    x_nullable: true
+            - - floor
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maximum: 4294967295
+                  minimum: 0
+                  title: Floor
+                  type: integer
+                  x-nullable: true
+                state:
+                  _extras__:
+                    maximum: 4294967295
+                    minimum: 0
+                    x_nullable: true
+            - - has_elevator
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Has elevator
+                  type: boolean
+                state:
+                  _extras__: {}
+            - - has_terrace
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Has terrace
+                  type: boolean
+                state:
+                  _extras__: {}
+            - - has_balcony
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Has balcony
+                  type: boolean
+                state:
+                  _extras__: {}
+            - - bathroom_type
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  enum:
+                  - shower
+                  - bathtub
+                  title: Bathroom type
+                  type: string
+                state:
+                  _extras__: {}
+            - - has_internet
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Has internet
+                  type: boolean
+                state:
+                  _extras__: {}
+            - - has_parking
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Has parking
+                  type: boolean
+                state:
+                  _extras__: {}
+            - - daily_enabled
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Daily enabled
+                  type: boolean
+                state:
+                  _extras__: {}
+            - - price_per_day
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  description: Цена за сутки (минимум 1 день)
+                  format: decimal
+                  title: Price per day
+                  type: string
+                  x-nullable: true
+                state:
+                  _extras__:
+                    x_nullable: true
+            - - parking_price_per_day
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  description: Цена за парковку в сутки (если платная)
+                  format: decimal
+                  title: Parking price per day
+                  type: string
+                  x-nullable: true
+                state:
+                  _extras__:
+                    x_nullable: true
+            - - is_active
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Is active
+                  type: boolean
+                state:
+                  _extras__: {}
+            - - is_deleted
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Is deleted
+                  type: boolean
+                state:
+                  _extras__: {}
+            - - main_image
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: uri
+                  readOnly: true
+                  title: Main image
+                  type: string
+                  x-nullable: true
+                state:
+                  _extras__:
+                    x_nullable: true
+            - - full_address
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Full address
+                  type: string
+                state:
+                  _extras__: {}
+            - - created_at
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: date-time
+                  readOnly: true
+                  title: Created at
+                  type: string
+                state:
+                  _extras__: {}
+            - - updated_at
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: date-time
+                  readOnly: true
+                  title: Updated at
+                  type: string
+                state:
+                  _extras__: {}
+          required:
+          - title
+          - description
+          - country
+          - city
+          - street
+          - house_number
+          type: object
+        state:
+          _extras__: {}
+    - - Review
+      - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id001
+        dictitems:
+          properties: !!python/object/apply:collections.OrderedDict
+          - - - id
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: ID
+                  type: integer
+                state:
+                  _extras__: {}
+            - - listing
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Listing
+                  type: integer
+                state:
+                  _extras__: {}
+            - - tenant
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Tenant
+                  type: integer
+                state:
+                  _extras__: {}
+            - - tenant_email
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Tenant email
+                  type: string
+                state:
+                  _extras__: {}
+            - - rating
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maximum: 5
+                  minimum: 1
+                  title: Rating
+                  type: integer
+                state:
+                  _extras__:
+                    maximum: 5
+                    minimum: 1
+            - - comment
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  minLength: 1
+                  title: Comment
+                  type: string
+                state:
+                  _extras__:
+                    min_length: 1
+            - - created_at
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: date-time
+                  readOnly: true
+                  title: Created at
+                  type: string
+                state:
+                  _extras__: {}
+          required:
+          - listing
+          - rating
+          - comment
+          type: object
+        state:
+          _extras__: {}
+    - - SearchHistory
+      - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id001
+        dictitems:
+          properties: !!python/object/apply:collections.OrderedDict
+          - - - id
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: ID
+                  type: integer
+                state:
+                  _extras__: {}
+            - - user
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: User
+                  type: integer
+                state:
+                  _extras__: {}
+            - - user_email
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: User email
+                  type: string
+                state:
+                  _extras__: {}
+            - - keyword
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  maxLength: 255
+                  minLength: 1
+                  title: Keyword
+                  type: string
+                state:
+                  _extras__:
+                    max_length: 255
+                    min_length: 1
+            - - searched_at
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: date-time
+                  readOnly: true
+                  title: Searched at
+                  type: string
+                state:
+                  _extras__: {}
+          required:
+          - keyword
+          type: object
+        state:
+          _extras__: {}
+    - - ViewHistory
+      - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id001
+        dictitems:
+          properties: !!python/object/apply:collections.OrderedDict
+          - - - id
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: ID
+                  type: integer
+                state:
+                  _extras__: {}
+            - - user
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: User
+                  type: integer
+                state:
+                  _extras__: {}
+            - - user_email
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: User email
+                  type: string
+                state:
+                  _extras__: {}
+            - - listing
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  title: Listing
+                  type: integer
+                state:
+                  _extras__: {}
+            - - listing_title
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  readOnly: true
+                  title: Listing title
+                  type: string
+                state:
+                  _extras__: {}
+            - - viewed_at
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id001
+                dictitems:
+                  format: date-time
+                  readOnly: true
+                  title: Viewed at
+                  type: string
+                state:
+                  _extras__: {}
+          required:
+          - listing
+          type: object
+        state:
+          _extras__: {}
+  info: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+    args:
+    - !!python/name:drf_yasg.openapi.Info ''
+    dictitems:
+      contact: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - !!python/name:drf_yasg.openapi.Contact ''
+        dictitems:
+          email: youremail@example.com
+        state:
+          _extras__: {}
+      description: API для управления сервисом аренды
+      title: Rental API
+      version: v1
+    state:
+      _default_version: v1
+      _extras__: {}
+  paths: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+    args:
+    - !!python/name:drf_yasg.openapi.Paths ''
+    dictitems:
+      /auth/login/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - &id002 !!python/name:drf_yasg.openapi.PathItem ''
+        dictitems:
+          parameters: []
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - &id003 !!python/name:drf_yasg.openapi.Operation ''
+            dictitems:
+              description: Проверяет email и пароль, возвращает токен для аутентификации.
+              operationId: auth_login
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - &id006 !!python/name:drf_yasg.openapi.Parameter ''
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id001
+                    dictitems:
+                      properties:
+                        email: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                          args:
+                          - *id001
+                          dictitems:
+                            description: Email пользователя
+                            type: string
+                          state:
+                            _extras__: {}
+                        password: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                          args:
+                          - *id001
+                          dictitems:
+                            description: Пароль пользователя
+                            type: string
+                          state:
+                            _extras__: {}
+                      required:
+                      - email
+                      - password
+                      type: object
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - &id004 !!python/name:drf_yasg.openapi.Responses ''
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - &id005 !!python/name:drf_yasg.openapi.Response ''
+                    dictitems:
+                      description: Успешный вход
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - &id007 !!python/name:drf_yasg.openapi.SchemaRef ''
+                        dictitems:
+                          $ref: '#/definitions/User'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Вход пользователя
+              tags:
+              - auth
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /auth/logout/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          parameters: []
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Удаляет текущий токен пользователя, тем самым разлогинивая
+                его.
+              operationId: auth_logout
+              parameters: []
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '204': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Токен удалён, выход выполнен
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Выход пользователя
+              tags:
+              - auth
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /auth/register/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          parameters: []
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Создаёт нового пользователя и возвращает токен для аутентификации.
+              operationId: auth_register
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/User'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '201': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Пользователь создан
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/User'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Регистрация пользователя
+              tags:
+              - auth
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /bookings/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'Управление бронированиями:
+
+                - Арендатор может создавать и отменять бронирования.
+
+                - Арендодатель может подтверждать или отклонять запросы.
+
+                - Администратор видит и может редактировать все бронирования.'
+              operationId: bookings_list
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: A page number within the paginated result set.
+                  in: query
+                  name: page
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Number of results to return per page.
+                  in: query
+                  name: page_size
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id001
+                        dictitems:
+                          properties:
+                            count: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                              args:
+                              - *id001
+                              dictitems:
+                                type: integer
+                              state:
+                                _extras__: {}
+                            next: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                              args:
+                              - *id001
+                              dictitems:
+                                format: uri
+                                type: string
+                                x-nullable: true
+                              state:
+                                _extras__:
+                                  x-nullable: true
+                            previous: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                              args:
+                              - *id001
+                              dictitems:
+                                format: uri
+                                type: string
+                                x-nullable: true
+                              state:
+                                _extras__:
+                                  x-nullable: true
+                            results: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                              args:
+                              - *id001
+                              dictitems:
+                                items: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                                  args:
+                                  - *id007
+                                  dictitems:
+                                    $ref: '#/definitions/Booking'
+                                  state:
+                                    _extras__: {}
+                                type: array
+                              state:
+                                _extras__: {}
+                          required:
+                          - count
+                          - results
+                          type: object
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - bookings
+            state:
+              _extras__:
+                deprecated: null
+          parameters: []
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'Управление бронированиями:
+
+                - Арендатор может создавать и отменять бронирования.
+
+                - Арендодатель может подтверждать или отклонять запросы.
+
+                - Администратор видит и может редактировать все бронирования.'
+              operationId: bookings_create
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Booking'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '201': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Booking'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - bookings
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /bookings/{id}/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          delete: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'Управление бронированиями:
+
+                - Арендатор может создавать и отменять бронирования.
+
+                - Арендодатель может подтверждать или отклонять запросы.
+
+                - Администратор видит и может редактировать все бронирования.'
+              operationId: bookings_delete
+              parameters: []
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '204': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - bookings
+            state:
+              _extras__:
+                deprecated: null
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'Управление бронированиями:
+
+                - Арендатор может создавать и отменять бронирования.
+
+                - Арендодатель может подтверждать или отклонять запросы.
+
+                - Администратор видит и может редактировать все бронирования.'
+              operationId: bookings_read
+              parameters: []
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Booking'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - bookings
+            state:
+              _extras__:
+                deprecated: null
+          parameters:
+          - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id006
+            dictitems:
+              in: path
+              name: id
+              required: true
+              type: string
+            state:
+              _extras__: {}
+          patch: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'Управление бронированиями:
+
+                - Арендатор может создавать и отменять бронирования.
+
+                - Арендодатель может подтверждать или отклонять запросы.
+
+                - Администратор видит и может редактировать все бронирования.'
+              operationId: bookings_partial_update
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Booking'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Booking'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - bookings
+            state:
+              _extras__:
+                deprecated: null
+          put: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'Управление бронированиями:
+
+                - Арендатор может создавать и отменять бронирования.
+
+                - Арендодатель может подтверждать или отклонять запросы.
+
+                - Администратор видит и может редактировать все бронирования.'
+              operationId: bookings_update
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Booking'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Booking'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - bookings
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /bookings/{id}/cancel/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          parameters:
+          - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id006
+            dictitems:
+              in: path
+              name: id
+              required: true
+              type: string
+            state:
+              _extras__: {}
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Арендатор может отменить своё бронирование, если до начала
+                осталось более 24 часов.
+              operationId: bookings_cancel
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Booking'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Бронирование успешно отменено
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Отменить бронирование
+              tags:
+              - bookings
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /bookings/{id}/confirm/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          parameters:
+          - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id006
+            dictitems:
+              in: path
+              name: id
+              required: true
+              type: string
+            state:
+              _extras__: {}
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Арендодатель или администратор подтверждает бронирование.
+              operationId: bookings_confirm
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Booking'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Бронирование подтверждено
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Подтвердить бронирование
+              tags:
+              - bookings
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /bookings/{id}/reject/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          parameters:
+          - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id006
+            dictitems:
+              in: path
+              name: id
+              required: true
+              type: string
+            state:
+              _extras__: {}
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Арендодатель или администратор отклоняет запрос на бронирование.
+              operationId: bookings_reject
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Booking'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Бронирование отклонено
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Отклонить бронирование
+              tags:
+              - bookings
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /listings/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Возвращает объявления с поиском, сортировкой и фильтрацией
+              operationId: listings_list
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Поиск по title, description, city, country
+                  in: query
+                  name: search
+                  type: string
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: 'Сортировка: price_per_day, created_at'
+                  in: query
+                  name: ordering
+                  type: string
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: A page number within the paginated result set.
+                  in: query
+                  name: page
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Number of results to return per page.
+                  in: query
+                  name: page_size
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Минимальная цена
+                  in: query
+                  name: min_price
+                  type: number
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Максимальная цена
+                  in: query
+                  name: max_price
+                  type: number
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Фильтр по городу
+                  in: query
+                  name: city
+                  type: string
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Фильтр по стране
+                  in: query
+                  name: country
+                  type: string
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Тип жилья
+                  in: query
+                  name: property_type
+                  type: string
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id001
+                        dictitems:
+                          items: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                            args:
+                            - *id007
+                            dictitems:
+                              $ref: '#/definitions/Listing'
+                            state:
+                              _extras__: {}
+                          type: array
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Список объявлений
+              tags:
+              - listings
+            state:
+              _extras__:
+                deprecated: null
+          parameters: []
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Создает новое объявление, где текущий пользователь становится
+                владельцем (LANDLORD)
+              operationId: listings_create
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Listing'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '201': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Listing'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Создать объявление
+              tags:
+              - listings
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /listings/{id}/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          delete: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Помечает объявление как удалённое (is_deleted=True). Только
+                владелец или админ может удалить.
+              operationId: listings_delete
+              parameters: []
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '204': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Удалено
+                    state:
+                      _extras__: {}
+                  '403': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Нет прав
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Удалить объявление
+              tags:
+              - listings
+            state:
+              _extras__:
+                deprecated: null
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Получает объявление по ID
+              operationId: listings_read
+              parameters: []
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Listing'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Получить объявление
+              tags:
+              - listings
+            state:
+              _extras__:
+                deprecated: null
+          parameters:
+          - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id006
+            dictitems:
+              in: path
+              name: id
+              required: true
+              type: string
+            state:
+              _extras__: {}
+          patch: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'Управление объявлениями аренды:
+
+                - Админ видит все объявления и может редактировать их.
+
+                - LANDLORD видит и редактирует только свои объявления.
+
+                - TENANT видит только активные объявления.'
+              operationId: listings_partial_update
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Listing'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Listing'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - listings
+            state:
+              _extras__:
+                deprecated: null
+          put: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Обновляет объявление. Только владелец или админ может изменить
+                данные.
+              operationId: listings_update
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Listing'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Listing'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                  '403': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Нет доступа
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Обновить объявление
+              tags:
+              - listings
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /listings/{id}/toggle_active/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          parameters:
+          - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id006
+            dictitems:
+              in: path
+              name: id
+              required: true
+              type: string
+            state:
+              _extras__: {}
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Меняет статус видимости объявления (is_active). Только
+                владелец или админ может изменить.
+              operationId: listings_toggle_active
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Listing'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: OK
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Переключить активность объявления
+              tags:
+              - listings
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /profile/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'Просмотр и редактирование профиля текущего пользователя.
+
+                Поддерживаются только методы GET, PUT и PATCH.'
+              operationId: profile_list
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: A page number within the paginated result set.
+                  in: query
+                  name: page
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Number of results to return per page.
+                  in: query
+                  name: page_size
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id001
+                        dictitems:
+                          properties:
+                            count: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                              args:
+                              - *id001
+                              dictitems:
+                                type: integer
+                              state:
+                                _extras__: {}
+                            next: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                              args:
+                              - *id001
+                              dictitems:
+                                format: uri
+                                type: string
+                                x-nullable: true
+                              state:
+                                _extras__:
+                                  x-nullable: true
+                            previous: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                              args:
+                              - *id001
+                              dictitems:
+                                format: uri
+                                type: string
+                                x-nullable: true
+                              state:
+                                _extras__:
+                                  x-nullable: true
+                            results: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                              args:
+                              - *id001
+                              dictitems:
+                                items: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                                  args:
+                                  - *id007
+                                  dictitems:
+                                    $ref: '#/definitions/User'
+                                  state:
+                                    _extras__: {}
+                                type: array
+                              state:
+                                _extras__: {}
+                          required:
+                          - count
+                          - results
+                          type: object
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - profile
+            state:
+              _extras__:
+                deprecated: null
+          parameters: []
+        state:
+          _extras__: {}
+      /profile/{id}/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Возвращает данные текущего пользователя.
+              operationId: profile_read
+              parameters: []
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Success
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/User'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Получить профиль
+              tags:
+              - profile
+            state:
+              _extras__:
+                deprecated: null
+          parameters:
+          - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id006
+            dictitems:
+              in: path
+              name: id
+              required: true
+              type: string
+            state:
+              _extras__: {}
+          patch: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Частично обновляет данные профиля текущего пользователя.
+              operationId: profile_partial_update
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/User'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Success
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/User'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Частично обновить профиль
+              tags:
+              - profile
+            state:
+              _extras__:
+                deprecated: null
+          put: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Полностью обновляет данные профиля текущего пользователя.
+              operationId: profile_update
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/User'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Success
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/User'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Обновить профиль
+              tags:
+              - profile
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /reviews/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Возвращает список отзывов в зависимости от роли пользователя
+              operationId: reviews_list
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: A page number within the paginated result set.
+                  in: query
+                  name: page
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Number of results to return per page.
+                  in: query
+                  name: page_size
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Success
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id001
+                        dictitems:
+                          items: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                            args:
+                            - *id007
+                            dictitems:
+                              $ref: '#/definitions/Review'
+                            state:
+                              _extras__: {}
+                          type: array
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Список отзывов
+              tags:
+              - reviews
+            state:
+              _extras__:
+                deprecated: null
+          parameters: []
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Создаёт новый отзыв от текущего пользователя после проживания
+              operationId: reviews_create
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Review'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '201': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Created
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Review'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Создать отзыв
+              tags:
+              - reviews
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /reviews/{id}/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          delete: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: "CRUD для отзывов:\n- list: список отзывов\n  - TENANT\
+                \ видит только свои одобренные отзывы\n  - LANDLORD видит отзывы на\
+                \ свои объекты\n  - Админ видит все отзывы\n- create: создать новый\
+                \ отзыв (только после проживания)\n- retrieve: получить отзыв по ID\n\
+                - update/partial_update: редактировать отзыв (только автор)\n- destroy:\
+                \ удалить отзыв (только автор)\n- approve: одобрить отзыв (только\
+                \ админ)"
+              operationId: reviews_delete
+              parameters: []
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '204': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: No Content
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Удалить отзыв
+              tags:
+              - reviews
+            state:
+              _extras__:
+                deprecated: null
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: "CRUD для отзывов:\n- list: список отзывов\n  - TENANT\
+                \ видит только свои одобренные отзывы\n  - LANDLORD видит отзывы на\
+                \ свои объекты\n  - Админ видит все отзывы\n- create: создать новый\
+                \ отзыв (только после проживания)\n- retrieve: получить отзыв по ID\n\
+                - update/partial_update: редактировать отзыв (только автор)\n- destroy:\
+                \ удалить отзыв (только автор)\n- approve: одобрить отзыв (только\
+                \ админ)"
+              operationId: reviews_read
+              parameters: []
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Success
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Review'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Получить отзыв
+              tags:
+              - reviews
+            state:
+              _extras__:
+                deprecated: null
+          parameters:
+          - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id006
+            dictitems:
+              in: path
+              name: id
+              required: true
+              type: string
+            state:
+              _extras__: {}
+          patch: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: "CRUD для отзывов:\n- list: список отзывов\n  - TENANT\
+                \ видит только свои одобренные отзывы\n  - LANDLORD видит отзывы на\
+                \ свои объекты\n  - Админ видит все отзывы\n- create: создать новый\
+                \ отзыв (только после проживания)\n- retrieve: получить отзыв по ID\n\
+                - update/partial_update: редактировать отзыв (только автор)\n- destroy:\
+                \ удалить отзыв (только автор)\n- approve: одобрить отзыв (только\
+                \ админ)"
+              operationId: reviews_partial_update
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Review'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Updated
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Review'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Частично обновить отзыв
+              tags:
+              - reviews
+            state:
+              _extras__:
+                deprecated: null
+          put: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: "CRUD для отзывов:\n- list: список отзывов\n  - TENANT\
+                \ видит только свои одобренные отзывы\n  - LANDLORD видит отзывы на\
+                \ свои объекты\n  - Админ видит все отзывы\n- create: создать новый\
+                \ отзыв (только после проживания)\n- retrieve: получить отзыв по ID\n\
+                - update/partial_update: редактировать отзыв (только автор)\n- destroy:\
+                \ удалить отзыв (только автор)\n- approve: одобрить отзыв (только\
+                \ админ)"
+              operationId: reviews_update
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Review'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Updated
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Review'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Обновить отзыв
+              tags:
+              - reviews
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /reviews/{id}/approve/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          parameters:
+          - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id006
+            dictitems:
+              in: path
+              name: id
+              required: true
+              type: string
+            state:
+              _extras__: {}
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: "CRUD для отзывов:\n- list: список отзывов\n  - TENANT\
+                \ видит только свои одобренные отзывы\n  - LANDLORD видит отзывы на\
+                \ свои объекты\n  - Админ видит все отзывы\n- create: создать новый\
+                \ отзыв (только после проживания)\n- retrieve: получить отзыв по ID\n\
+                - update/partial_update: редактировать отзыв (только автор)\n- destroy:\
+                \ удалить отзыв (только автор)\n- approve: одобрить отзыв (только\
+                \ админ)"
+              operationId: reviews_approve
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/Review'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: Review approved
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/Review'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Одобрить отзыв
+              tags:
+              - reviews
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /search-history/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Возвращает все поисковые запросы текущего пользователя,
+                можно фильтровать по дате
+              operationId: search-history_list
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Which field to use when ordering the results.
+                  in: query
+                  name: ordering
+                  required: false
+                  type: string
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: A search term.
+                  in: query
+                  name: search
+                  required: false
+                  type: string
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: A page number within the paginated result set.
+                  in: query
+                  name: page
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Number of results to return per page.
+                  in: query
+                  name: page_size
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: 'Фильтр: показать только поисковые запросы после этой
+                    даты (YYYY-MM-DD)'
+                  in: query
+                  name: from_date
+                  type: string
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id001
+                        dictitems:
+                          items: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                            args:
+                            - *id007
+                            dictitems:
+                              $ref: '#/definitions/SearchHistory'
+                            state:
+                              _extras__: {}
+                          type: array
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Список поисковых запросов
+              tags:
+              - search-history
+            state:
+              _extras__:
+                deprecated: null
+          parameters: []
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'История поисковых запросов пользователя:
+
+                - list: получение истории поиска текущего пользователя
+
+                - create: добавление нового поискового запроса'
+              operationId: search-history_create
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/SearchHistory'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '201': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/SearchHistory'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - search-history
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+      /view-history/: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+        args:
+        - *id002
+        dictitems:
+          get: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: Возвращает все просмотры текущего пользователя, можно фильтровать
+                по дате
+              operationId: view-history_list
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Which field to use when ordering the results.
+                  in: query
+                  name: ordering
+                  required: false
+                  type: string
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: A search term.
+                  in: query
+                  name: search
+                  required: false
+                  type: string
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: A page number within the paginated result set.
+                  in: query
+                  name: page
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: Number of results to return per page.
+                  in: query
+                  name: page_size
+                  required: false
+                  type: integer
+                state:
+                  _extras__: {}
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  description: 'Фильтр: показать только просмотры после этой даты
+                    (YYYY-MM-DD)'
+                  in: query
+                  name: from_date
+                  type: string
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '200': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id001
+                        dictitems:
+                          items: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                            args:
+                            - *id007
+                            dictitems:
+                              $ref: '#/definitions/ViewHistory'
+                            state:
+                              _extras__: {}
+                          type: array
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              summary: Список просмотров
+              tags:
+              - view-history
+            state:
+              _extras__:
+                deprecated: null
+          parameters: []
+          post: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+            args:
+            - *id003
+            dictitems:
+              description: 'История просмотров пользователя:
+
+                - list: получение истории просмотров текущего пользователя
+
+                - create: добавление нового просмотра'
+              operationId: view-history_create
+              parameters:
+              - !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id006
+                dictitems:
+                  in: body
+                  name: data
+                  required: true
+                  schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id007
+                    dictitems:
+                      $ref: '#/definitions/ViewHistory'
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              responses: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                args:
+                - *id004
+                dictitems:
+                  '201': !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                    args:
+                    - *id005
+                    dictitems:
+                      description: ''
+                      schema: !!python/object/apply:drf_yasg.openapi._bare_SwaggerDict
+                        args:
+                        - *id007
+                        dictitems:
+                          $ref: '#/definitions/ViewHistory'
+                        state:
+                          _extras__: {}
+                    state:
+                      _extras__: {}
+                state:
+                  _extras__: {}
+              tags:
+              - view-history
+            state:
+              _extras__:
+                deprecated: null
+        state:
+          _extras__: {}
+    state:
+      _extras__: {}
+  produces:
+  - application/json
+  security:
+  - !!python/object/apply:collections.OrderedDict
+    - - - Token
+        - []
+  securityDefinitions: !!python/object/apply:collections.OrderedDict
+  - - - Token
+      - !!python/object/apply:collections.OrderedDict
+        - - - type
+            - apiKey
+          - - name
+            - Authorization
+          - - in
+            - header
+  swagger: '2.0'
+state:
+  _extras__: {}
