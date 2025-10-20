@@ -24,12 +24,12 @@ class Booking(models.Model):
 
     listing = models.ForeignKey(
         Listing,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='bookings'
     )
     tenant = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='bookings'
     )
 

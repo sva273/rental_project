@@ -6,8 +6,8 @@ from listings.models import Listing
 # Create your models here.
 
 class Review(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='reviews')
-    tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
+    listing = models.ForeignKey(Listing, on_delete=models.PROTECT, related_name='reviews')
+    tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='reviews')
     rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

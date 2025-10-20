@@ -31,10 +31,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         - LANDLORD — только отзывы на свои объекты.
         - TENANT — только свои одобренные отзывы.
         """
-        # Защита от генерации схемы Swagger
-        if getattr(self, 'swagger_fake_view', False):
-            return Review.objects.none()
-
         user = self.request.user
         if user.is_staff:
             return Review.objects.all()

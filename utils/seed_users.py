@@ -31,7 +31,7 @@ def create_users(num, role):
             role=role,
             phone_number=phone_number
         )
-        print(f"✅ Created {role}: {user.email} ({user.first_name} {user.last_name})")
+        print(f" Created {role}: {user.email} ({user.first_name} {user.last_name})")
 
 # Создаем арендаторов
 create_users(NUM_TENANTS, 'tenant')
@@ -39,4 +39,4 @@ create_users(NUM_TENANTS, 'tenant')
 # Создаем арендодателей
 create_users(NUM_LANDLORDS, 'landlord')
 
-print("🎉 All users created successfully!")
+print(" All users created successfully!")

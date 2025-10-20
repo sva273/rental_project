@@ -30,10 +30,10 @@ def download_images(num_images=NUM_IMAGES):
     existing = len([f for f in os.listdir(MEDIA_PATH) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
 
     if existing >= num_images:
-        print(f"📸 Уже есть {existing} изображений, скачивание не требуется.")
+        print(f"Уже есть {existing} изображений, скачивание не требуется.")
         return
 
-    print(f"⬇️ Скачиваем {num_images} изображений с picsum.photos...")
+    print(f"Скачиваем {num_images} изображений с picsum.photos...")
 
     for i in range(1, num_images + 1):
         img_name = f"IMG_{i:03}.jpg"

@@ -11,7 +11,7 @@ class SearchHistory(models.Model):
     """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='search_history'
     )
     keyword = models.CharField(max_length=255)

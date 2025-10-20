@@ -4,6 +4,7 @@ from .models import Listing
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
     list_display = [
+        'id',
         'title',
         'landlord',
         'city',

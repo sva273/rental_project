@@ -32,10 +32,6 @@ class BookingViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsAdminOrBookingParticipant]
 
     def get_queryset(self):
-        # Защита от генерации Swagger-схемы
-        if getattr(self, 'swagger_fake_view', False):
-            return Booking.objects.none()
-
         user = self.request.user
         if not user.is_authenticated:
             return Booking.objects.none()

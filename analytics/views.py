@@ -29,9 +29,6 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
     queryset = ViewHistory.objects.all()
 
     def get_queryset(self):
-        if getattr(self, 'swagger_fake_view', False):
-            return ViewHistory.objects.none()
-
         user = self.request.user
         if not user.is_authenticated:
             return ViewHistory.objects.none()
@@ -118,8 +115,8 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
     queryset = SearchHistory.objects.all()
 
     def get_queryset(self):
-        if getattr(self, 'swagger_fake_view', False):
-            return SearchHistory.objects.none()
+        # if getattr(self, 'swagger_fake_view', False):
+        #     return SearchHistory.objects.none()
 
         user = self.request.user
         if not user.is_authenticated:

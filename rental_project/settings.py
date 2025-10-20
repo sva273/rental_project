@@ -157,7 +157,10 @@ SWAGGER_SETTINGS = {
             'in': 'header'
         }
     },
-    'USE_SESSION_AUTH': True,
+    'USE_SESSION_AUTH': False,
+    'LOGIN_URL': '/api/v1/auth/login',
+    'LOGOUT_URL': '/api/v1/auth/logout',
+
 }
 
 # ---------------------- Email Settings (консоль для разработки) ----------------------
