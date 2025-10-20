@@ -31,9 +31,6 @@ class ListingViewSet(viewsets.ModelViewSet):
     filterset_fields = ['property_type', 'country', 'city', 'is_active']
 
     def get_queryset(self):
-        # if getattr(self, 'swagger_fake_view', False):
-        #     return Listing.objects.none()
-
         user = self.request.user
         if not user.is_authenticated:
             return Listing.objects.none()
