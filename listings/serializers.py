@@ -1,7 +1,7 @@
 from django.db.models import Avg
 from rest_framework import serializers
-
 from listings.models import Listing
+
 
 class ListingSerializer(serializers.ModelSerializer):
     landlord_email = serializers.ReadOnlyField(source='landlord.email')
@@ -74,3 +74,8 @@ class ListingSerializer(serializers.ModelSerializer):
                 "If daily rental is enabled, please provide a positive price per day."
             )
         return data
+
+
+class ToggleActiveResponseSerializer(serializers.Serializer):
+    """Serializer for toggle_active response"""
+    is_active = serializers.BooleanField()

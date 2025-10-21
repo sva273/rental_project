@@ -1,4 +1,4 @@
-from rest_framework import viewsets, mixins, filters
+from rest_framework import viewsets, mixins, filters, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -10,8 +10,15 @@ from analytics.models import ViewHistory, SearchHistory
 from analytics.serializers import ViewHistorySerializer, SearchHistorySerializer
 from listings.models import Listing
 from listings.serializers import ListingSerializer
+from rest_framework import serializers
 
 MAX_HISTORY = 50  # maximum number of history records per user
+
+
+# --- Serializer for popular keywords response ---
+class PopularKeywordSerializer(serializers.Serializer):
+    keyword = serializers.CharField()
+    count = serializers.IntegerField()
 
 
 class ViewHistoryViewSet(mixins.ListModelMixin,
@@ -32,28 +39,14 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         user = self.request.user
         if not user.is_authenticated:
             return ViewHistory.objects.none()
-
         return ViewHistory.objects.filter(user=user)
 
     def perform_create(self, serializer):
-        """
-        Creates a new view history entry if the listing differs
-        from the most recently viewed one. Also increments the
-        listing view count and trims old records based on MAX_HISTORY.
-        """
         listing = serializer.validated_data['listing']
         self.record_view(self.request.user, listing)
 
     @staticmethod
     def record_view(user, listing):
-        """
-        Records a listing view:
-        - Checks if the listing differs from the last viewed one.
-        - Creates a ViewHistory entry.
-        - Increments the listing `views_count` value.
-        - Deletes old entries if MAX_HISTORY is exceeded.
-        - Удаляет старые записи, если превышен лимит MAX_HISTORY.
-        """
         last = ViewHistory.objects.filter(user=user).order_by('-viewed_at').first()
         if not last or last.listing != listing:
             ViewHistory.objects.create(user=user, listing=listing)
@@ -67,19 +60,17 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         operation_summary="List of listing views",
         operation_description="Returns all viewed listings of the current user, optionally filtered by date.",
         manual_parameters=[
-            openapi.Parameter(
-                'from_date', openapi.IN_QUERY,
-                description="Filter: show only views after this date (YYYY-MM-DD)",
-                type=openapi.TYPE_STRING
-            ),
+            openapi.Parameter('from_date', openapi.IN_QUERY,
+                              description="Filter: show only views after this date (YYYY-MM-DD)",
+                              type=openapi.TYPE_STRING),
+            openapi.Parameter('ordering', openapi.IN_QUERY,
+                              description="Order by viewed_at", type=openapi.TYPE_STRING),
+            openapi.Parameter('search', openapi.IN_QUERY,
+                              description="Search by listing title or city", type=openapi.TYPE_STRING),
         ],
         responses={200: openapi.Response(description="OK", schema=ViewHistorySerializer(many=True))}
     )
     def list(self, request, *args, **kwargs):
-        """
-        Returns the view history of the current user.
-        Supports filtering by `from_date` query parameter.
-        """
         queryset = self.get_queryset()
         from_date = request.query_params.get('from_date')
         if from_date:
@@ -88,15 +79,21 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         return Response(serializer.data)
 
     @swagger_auto_schema(
+        operation_summary="Add listing view",
+        operation_description="Adds a new view history entry for the current user.",
+        request_body=ViewHistorySerializer,
+        responses={201: openapi.Response(description="Created", schema=ViewHistorySerializer())}
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
         operation_summary="Popular listings",
         operation_description="Returns a list of listings sorted by view count.",
         responses={200: openapi.Response(description="OK", schema=ListingSerializer(many=True))}
     )
     @action(detail=False, methods=['get'], url_path='popular')
     def popular_listings(self, request):
-        """
-        Returns the top 50 listings by number of views (`views_count`).
-        """
         listings = Listing.objects.filter(is_deleted=False).order_by('-views_count')[:50]
         serializer = ListingSerializer(listings, many=True)
         return Response(serializer.data)
@@ -120,14 +117,9 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
         user = self.request.user
         if not user.is_authenticated:
             return SearchHistory.objects.none()
-
         return SearchHistory.objects.filter(user=user)
 
     def perform_create(self, serializer):
-        """
-        Saves a search query if it differs from the last one.
-        Also trims old history entries based on MAX_HISTORY.
-        """
         keyword = serializer.validated_data['keyword']
         last = SearchHistory.objects.filter(user=self.request.user).order_by('-searched_at').first()
         if not last or last.keyword != keyword:
@@ -140,19 +132,17 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
         operation_summary="List of search queries",
         operation_description="Returns all search queries of the current user, optionally filtered by date.",
         manual_parameters=[
-            openapi.Parameter(
-                'from_date', openapi.IN_QUERY,
-                description="Filter: show only searches after this date (YYYY-MM-DD)",
-                type=openapi.TYPE_STRING
-            ),
+            openapi.Parameter('from_date', openapi.IN_QUERY,
+                              description="Filter: show only searches after this date (YYYY-MM-DD)",
+                              type=openapi.TYPE_STRING),
+            openapi.Parameter('ordering', openapi.IN_QUERY,
+                              description="Order by searched_at", type=openapi.TYPE_STRING),
+            openapi.Parameter('search', openapi.IN_QUERY,
+                              description="Search by keyword", type=openapi.TYPE_STRING),
         ],
         responses={200: openapi.Response(description="OK", schema=SearchHistorySerializer(many=True))}
     )
     def list(self, request, *args, **kwargs):
-        """
-        Returns the search history of the current user.
-        Supports filtering by `from_date` query parameter.
-        """
         queryset = self.get_queryset()
         from_date = request.query_params.get('from_date')
         if from_date:
@@ -161,20 +151,21 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
         return Response(serializer.data)
 
     @swagger_auto_schema(
+        operation_summary="Add search query",
+        operation_description="Adds a new search keyword to the user's history.",
+        request_body=SearchHistorySerializer,
+        responses={201: openapi.Response(description="Created", schema=SearchHistorySerializer())}
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
         operation_summary="Popular search keywords",
         operation_description="Returns a list of the most frequent search keywords across all users.",
-        responses={200: openapi.Response(description="OK", examples={
-            'application/json': [
-                {'keyword': 'apartment in Berlin', 'count': 120},
-                {'keyword': 'long-term rent', 'count': 110}
-            ]
-        })}
+        responses={200: openapi.Response(description="OK", schema=PopularKeywordSerializer(many=True))}
     )
     @action(detail=False, methods=['get'], url_path='popular')
     def popular_keywords(self, request):
-        """
-        Returns the top 50 most used search keywords by frequency.
-        """
         keywords = (
             SearchHistory.objects
             .values('keyword')
