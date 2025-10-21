@@ -8,7 +8,7 @@ User = get_user_model()
 
 def validate_phone_number(value):
     if value and not re.fullmatch(r'\d{10,15}', value):
-        raise serializers.ValidationError("Номер телефона должен содержать только цифры (10-15 символов).")
+        raise serializers.ValidationError("Phone number must contain digits only (10–15 characters).")
     return value
 
 
@@ -25,11 +25,13 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
+        """Validate that both passwords match."""
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Пароли не совпадают."})
+            raise serializers.ValidationError({"password": "Passwords do not match."})
         return attrs
 
     def create(self, validated_data):
+        """Create a new user with a hashed password."""
         validated_data.pop('password2')
         password = validated_data.pop('password')
         user = User.objects.create(**validated_data)
@@ -38,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
+        """Update user instance (including optional password change)."""
         password = validated_data.pop('password', None)
         validated_data.pop('password2', None)
 

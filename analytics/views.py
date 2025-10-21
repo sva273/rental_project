@@ -11,14 +11,14 @@ from analytics.serializers import ViewHistorySerializer, SearchHistorySerializer
 from listings.models import Listing
 from listings.serializers import ListingSerializer
 
-MAX_HISTORY = 50  # максимальное количество записей истории на пользователя
+MAX_HISTORY = 50  # maximum number of history records per user
 
 
 class ViewHistoryViewSet(mixins.ListModelMixin,
                          mixins.CreateModelMixin,
                          viewsets.GenericViewSet):
     """
-    ViewHistoryViewSet — управление историей просмотров объявлений пользователем.
+    ViewHistoryViewSet — manages user's listing view history.
     """
 
     serializer_class = ViewHistorySerializer
@@ -37,8 +37,9 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
 
     def perform_create(self, serializer):
         """
-        Создаёт запись просмотра, если объявление отличается от последнего просмотренного.
-        Также увеличивает счётчик просмотров и ограничивает историю до MAX_HISTORY.
+        Creates a new view history entry if the listing differs
+        from the most recently viewed one. Also increments the
+        listing view count and trims old records based on MAX_HISTORY.
         """
         listing = serializer.validated_data['listing']
         self.record_view(self.request.user, listing)
@@ -46,10 +47,11 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
     @staticmethod
     def record_view(user, listing):
         """
-        Статический метод для записи просмотра объявления:
-        - Проверяет, отличается ли от последнего просмотренного.
-        - Создаёт запись в ViewHistory.
-        - Увеличивает views_count у объявления.
+        Records a listing view:
+        - Checks if the listing differs from the last viewed one.
+        - Creates a ViewHistory entry.
+        - Increments the listing `views_count` value.
+        - Deletes old entries if MAX_HISTORY is exceeded.
         - Удаляет старые записи, если превышен лимит MAX_HISTORY.
         """
         last = ViewHistory.objects.filter(user=user).order_by('-viewed_at').first()
@@ -62,12 +64,12 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
                 ViewHistory.objects.filter(user=user).order_by('viewed_at')[:excess].delete()
 
     @swagger_auto_schema(
-        operation_summary="Список просмотров",
-        operation_description="Возвращает все просмотры текущего пользователя, можно фильтровать по дате",
+        operation_summary="List of listing views",
+        operation_description="Returns all viewed listings of the current user, optionally filtered by date.",
         manual_parameters=[
             openapi.Parameter(
                 'from_date', openapi.IN_QUERY,
-                description="Фильтр: показать только просмотры после этой даты (YYYY-MM-DD)",
+                description="Filter: show only views after this date (YYYY-MM-DD)",
                 type=openapi.TYPE_STRING
             ),
         ],
@@ -75,8 +77,8 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
     )
     def list(self, request, *args, **kwargs):
         """
-        Возвращает историю просмотров текущего пользователя.
-        Поддерживает фильтрацию по дате через параметр from_date.
+        Returns the view history of the current user.
+        Supports filtering by `from_date` query parameter.
         """
         queryset = self.get_queryset()
         from_date = request.query_params.get('from_date')
@@ -86,14 +88,14 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         return Response(serializer.data)
 
     @swagger_auto_schema(
-        operation_summary="Популярные объявления",
-        operation_description="Возвращает список объявлений, отсортированных по количеству просмотров",
+        operation_summary="Popular listings",
+        operation_description="Returns a list of listings sorted by view count.",
         responses={200: openapi.Response(description="OK", schema=ListingSerializer(many=True))}
     )
     @action(detail=False, methods=['get'], url_path='popular')
     def popular_listings(self, request):
         """
-        Возвращает топ-50 объявлений по количеству просмотров (views_count).
+        Returns the top 50 listings by number of views (`views_count`).
         """
         listings = Listing.objects.filter(is_deleted=False).order_by('-views_count')[:50]
         serializer = ListingSerializer(listings, many=True)
@@ -104,7 +106,7 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
                            mixins.CreateModelMixin,
                            viewsets.GenericViewSet):
     """
-    SearchHistoryViewSet — управление историей поисковых запросов пользователя.
+    SearchHistoryViewSet — manages user's search keyword history.
     """
 
     serializer_class = SearchHistorySerializer
@@ -115,9 +117,6 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
     queryset = SearchHistory.objects.all()
 
     def get_queryset(self):
-        # if getattr(self, 'swagger_fake_view', False):
-        #     return SearchHistory.objects.none()
-
         user = self.request.user
         if not user.is_authenticated:
             return SearchHistory.objects.none()
@@ -126,8 +125,8 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
 
     def perform_create(self, serializer):
         """
-        Создаёт запись поискового запроса, если он отличается от последнего.
-        Ограничивает историю до MAX_HISTORY.
+        Saves a search query if it differs from the last one.
+        Also trims old history entries based on MAX_HISTORY.
         """
         keyword = serializer.validated_data['keyword']
         last = SearchHistory.objects.filter(user=self.request.user).order_by('-searched_at').first()
@@ -138,12 +137,12 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
                 SearchHistory.objects.filter(user=self.request.user).order_by('searched_at')[:excess].delete()
 
     @swagger_auto_schema(
-        operation_summary="Список поисковых запросов",
-        operation_description="Возвращает все поисковые запросы текущего пользователя, можно фильтровать по дате",
+        operation_summary="List of search queries",
+        operation_description="Returns all search queries of the current user, optionally filtered by date.",
         manual_parameters=[
             openapi.Parameter(
                 'from_date', openapi.IN_QUERY,
-                description="Фильтр: показать только поисковые запросы после этой даты (YYYY-MM-DD)",
+                description="Filter: show only searches after this date (YYYY-MM-DD)",
                 type=openapi.TYPE_STRING
             ),
         ],
@@ -151,8 +150,8 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
     )
     def list(self, request, *args, **kwargs):
         """
-        Возвращает историю поисковых запросов текущего пользователя.
-        Поддерживает фильтрацию по дате через параметр from_date.
+        Returns the search history of the current user.
+        Supports filtering by `from_date` query parameter.
         """
         queryset = self.get_queryset()
         from_date = request.query_params.get('from_date')
@@ -162,19 +161,19 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
         return Response(serializer.data)
 
     @swagger_auto_schema(
-        operation_summary="Популярные поисковые запросы",
-        operation_description="Возвращает список ключевых слов, отсортированных по частоте использования",
+        operation_summary="Popular search keywords",
+        operation_description="Returns a list of the most frequent search keywords across all users.",
         responses={200: openapi.Response(description="OK", examples={
             'application/json': [
-                {'keyword': 'квартира в Берлине', 'count': 120},
-                {'keyword': 'долгосрочная аренда', 'count': 110}
+                {'keyword': 'apartment in Berlin', 'count': 120},
+                {'keyword': 'long-term rent', 'count': 110}
             ]
         })}
     )
     @action(detail=False, methods=['get'], url_path='popular')
     def popular_keywords(self, request):
         """
-        Возвращает топ-50 популярных поисковых запросов по количеству повторений.
+        Returns the top 50 most used search keywords by frequency.
         """
         keywords = (
             SearchHistory.objects

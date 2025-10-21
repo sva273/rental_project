@@ -18,17 +18,17 @@ class Listing(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
 
-    # Адрес
+    # Address
     country = models.CharField(max_length=100)
     city = models.CharField(max_length=100, db_index=True)
     street = models.CharField(max_length=100)
     house_number = models.CharField(max_length=10)
 
-    # Геолокация (опционально)
+    # Geolocation (optional)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
-    # Характеристики жилья
+    # Property details
     property_type = models.CharField(
         max_length=50,
         choices=PropertyTypeChoices.CHOICES,
@@ -48,26 +48,26 @@ class Listing(models.Model):
     has_internet = models.BooleanField(default=False)
     has_parking = models.BooleanField(default=False)
 
-    views_count = models.PositiveIntegerField(default=0, help_text="Количество просмотров объявления")
+    views_count = models.PositiveIntegerField(default=0, help_text="Number of views for this listing")
 
-    # Стоимость аренды (только суточная)
+    # Rental price (daily only)
     daily_enabled = models.BooleanField(default=True)
     price_per_day = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True,
-        help_text="Цена за сутки (минимум 1 день)"
+        help_text="Price per day (minimum 1 day)"
     )
 
-    # Стоимость парковки (опционально)
+    # Parking price (optional)
     parking_price_per_day = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True,
-        help_text="Цена за парковку в сутки (если платная)"
+        help_text="Parking price per day (if paid)"
     )
 
-    # Статусы
+    # Status flags
     is_active = models.BooleanField(default=True, db_index=True)
     is_deleted = models.BooleanField(default=False)
 
-    # Фото и даты
+    # Main image and timestamps
     main_image = models.ImageField(upload_to='listing_images/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -84,32 +84,33 @@ class Listing(models.Model):
         ]
 
     def clean(self):
-        """Валидация логики объявления"""
+        """Validate listing logic"""
         if self.daily_enabled:
             if not self.price_per_day or self.price_per_day <= 0:
-                raise ValidationError("Если включена суточная аренда, укажите положительную цену за день.")
+                raise ValidationError("If daily rental is enabled, please specify a positive price per day.")
         else:
             self.price_per_day = None
 
     def save(self, *args, **kwargs):
-        """Вызов clean() при каждом сохранении"""
+        """Call clean() before saving"""
         self.clean()
         super().save(*args, **kwargs)
 
     def soft_delete(self):
-        """Мягкое удаление"""
+        """Soft delete the listing"""
         self.is_deleted = True
         self.is_active = False
         self.save()
 
     def toggle_active(self):
-        """Активировать/деактивировать объявление"""
+        """Toggle listing active status"""
         self.is_active = not self.is_active
         self.save()
         return self.is_active
 
     @property
     def full_address(self):
+        """Return full address as a string"""
         return f"{self.street}, {self.house_number}, {self.city}, {self.country}"
 
     def __str__(self):
@@ -117,9 +118,11 @@ class Listing(models.Model):
 
     @property
     def average_rating(self):
+        """Return average rating of all reviews (rounded to 2 decimals)"""
         avg = self.reviews.aggregate(avg_rating=Avg('rating'))['avg_rating']
         return round(avg, 2) if avg else 0
 
     @property
     def reviews_count(self):
+        """Return total number of reviews"""
         return self.reviews.count()

@@ -36,7 +36,6 @@ class ListingSerializer(serializers.ModelSerializer):
             'price_per_day',
             'parking_price_per_day',
             'is_active',
-            'is_deleted',
             'main_image',
             'full_address',
             'average_rating',
@@ -49,7 +48,6 @@ class ListingSerializer(serializers.ModelSerializer):
             'landlord',
             'landlord_email',
             'is_active',
-            'is_deleted',
             'full_address',
             'average_rating',
             'reviews_count',
@@ -58,18 +56,21 @@ class ListingSerializer(serializers.ModelSerializer):
         ]
 
     def get_average_rating(self, obj):
+        """Return the average rating of the listing rounded to 2 decimals"""
         avg = obj.reviews.aggregate(avg_rating=Avg('rating'))['avg_rating']
         return round(avg, 2) if avg else 0
 
     def get_reviews_count(self, obj):
+        """Return the total number of reviews"""
         return obj.reviews.count()
 
     def validate(self, data):
+        """Validate that daily rental has a positive price if enabled"""
         daily_enabled = data.get('daily_enabled')
         price_per_day = data.get('price_per_day')
 
         if daily_enabled and (not price_per_day or price_per_day <= 0):
             raise serializers.ValidationError(
-                "Если включена суточная аренда, укажите положительную цену за день."
+                "If daily rental is enabled, please provide a positive price per day."
             )
         return data

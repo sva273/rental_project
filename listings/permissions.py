@@ -3,16 +3,16 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 class IsAdminOrLandlord(BasePermission):
     """
-    Разрешает:
-    - Чтение (GET, HEAD, OPTIONS) — всем авторизованным пользователям.
-    - Запись (POST, PUT, PATCH, DELETE) — только администратору или владельцу объявления (LANDLORD).
+    Permission for Listing objects:
+    - Read-only methods (GET, HEAD, OPTIONS) are allowed for any authenticated user.
+    - Write methods (POST, PUT, PATCH, DELETE) are allowed only for admin or the listing owner (LANDLORD).
     """
     def has_permission(self, request, view):
         user = request.user
-        # Разрешить безопасные методы всем авторизованным
+        # Allow safe methods for any authenticated user
         if request.method in SAFE_METHODS:
             return user.is_authenticated
-        # Для небезопасных — только админ или LANDLORD
+        # For unsafe methods — only admin or LANDLORD
         return user.is_authenticated and (
             user.is_staff or user.groups.filter(name__iexact='LANDLORD').exists()
         )
@@ -20,14 +20,14 @@ class IsAdminOrLandlord(BasePermission):
     def has_object_permission(self, request, view, obj):
         user = request.user
 
-        # Администратор — всегда имеет доступ
+        # Admin always has full access
         if user.is_staff:
             return True
 
-        # LANDLORD — доступ только к своим объявлениям
+        # LANDLORD — access only to their own listings
         if user.groups.filter(name__iexact='LANDLORD').exists():
             return obj.landlord == user
 
-        # TENANT — только безопасные методы
+        # TENANT — only safe methods
         return request.method in SAFE_METHODS
 

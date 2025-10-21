@@ -11,7 +11,7 @@ from .serializers import BookingSerializer
 from .permissions import IsAdminOrBookingParticipant
 
 
-# --- Кастомный декоратор для извлечения и проверки объекта ---
+# --- Custom decorator to extract and check object permissions ---
 def with_booking(func):
     def wrapper(self, request, pk=None, *args, **kwargs):
         booking = self.get_object()
@@ -23,10 +23,10 @@ def with_booking(func):
 
 class BookingViewSet(viewsets.ModelViewSet):
     """
-    Управление бронированиями:
-    - TENANT может создавать, отменять и просматривать свои бронирования.
-    - LANDLORD может подтверждать и отклонять бронирования своих объектов.
-    - ADMIN видит и управляет всеми бронированиями.
+    Booking management:
+    - TENANT can create, cancel, and view their own bookings.
+    - LANDLORD can confirm or reject bookings for their listings.
+    - ADMIN can view and manage all bookings.
     """
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticated, IsAdminOrBookingParticipant]
@@ -51,52 +51,52 @@ class BookingViewSet(viewsets.ModelViewSet):
     # --- Swagger аннотации ---
     swagger_docs = {
         'list': swagger_auto_schema(
-            operation_summary="Список бронирований",
-            operation_description="Возвращает список бронирований в зависимости от роли пользователя",
+            operation_summary="List Bookings",
+            operation_description="Returns a list of bookings depending on the user's role",
             responses={200: openapi.Response(description="OK", schema=BookingSerializer(many=True))}
         ),
         'create': swagger_auto_schema(
-            operation_summary="Создать бронирование",
-            operation_description="TENANT создаёт новое бронирование. Статус — PENDING.",
+            operation_summary="Create Booking",
+            operation_description="TENANT creates a new booking. Status is set to PENDING.",
             request_body=BookingSerializer,
-            responses={201: openapi.Response(description="Создано", schema=BookingSerializer())}
+            responses={201: openapi.Response(description="Created", schema=BookingSerializer())}
         ),
         'retrieve': swagger_auto_schema(
-            operation_summary="Получить бронирование",
+            operation_summary="Retrieve Booking",
             responses={200: openapi.Response(description="OK", schema=BookingSerializer())}
         ),
         'update': swagger_auto_schema(
-            operation_summary="Обновить бронирование",
+            operation_summary="Update Booking",
             request_body=BookingSerializer,
-            responses={200: openapi.Response(description="Обновлено", schema=BookingSerializer())}
+            responses={200: openapi.Response(description="Updated", schema=BookingSerializer())}
         ),
         'partial_update': swagger_auto_schema(
-            operation_summary="Частично обновить бронирование",
+            operation_summary="Partial Update Booking",
             request_body=BookingSerializer,
-            responses={200: openapi.Response(description="Обновлено", schema=BookingSerializer())}
+            responses={200: openapi.Response(description="Updated", schema=BookingSerializer())}
         ),
         'destroy': swagger_auto_schema(
-            operation_summary="Удалить бронирование",
-            responses={204: openapi.Response(description="Удалено")}
+            operation_summary="Delete Booking",
+            responses={204: openapi.Response(description="Deleted")}
         ),
         'cancel': swagger_auto_schema(
-            operation_summary="Отменить бронирование",
-            operation_description="TENANT может отменить своё бронирование, если до начала осталось более 24 часов.",
-            responses={200: openapi.Response(description="Бронирование отменено")}
+            operation_summary="Cancel Booking",
+            operation_description="TENANT can cancel their booking if more than 24 hours remain before check-in.",
+            responses={200: openapi.Response(description="Booking cancelled")}
         ),
         'confirm': swagger_auto_schema(
-            operation_summary="Подтвердить бронирование",
-            operation_description="LANDLORD или ADMIN подтверждает бронирование. Статус → CONFIRMED.",
-            responses={200: openapi.Response(description="Бронирование подтверждено")}
+            operation_summary="Confirm Booking",
+            operation_description="LANDLORD or ADMIN confirms the booking. Status → CONFIRMED.",
+            responses={200: openapi.Response(description="Booking confirmed")}
         ),
         'reject': swagger_auto_schema(
-            operation_summary="Отклонить бронирование",
-            operation_description="LANDLORD или ADMIN отклоняет бронирование. Статус → REJECTED.",
-            responses={200: openapi.Response(description="Бронирование отклонено")}
+            operation_summary="Reject Booking",
+            operation_description="LANDLORD or ADMIN rejects the booking. Status → REJECTED.",
+            responses={200: openapi.Response(description="Booking rejected")}
         ),
     }
 
-    # --- CRUD методы ---
+    # --- CRUD methods ---
     @swagger_docs['list']
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -132,7 +132,7 @@ class BookingViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
-    # --- Кастомные действия ---
+    # --- Custom actions ---
     @swagger_docs['cancel']
     @action(detail=True, methods=['post'])
     @with_booking
@@ -141,24 +141,26 @@ class BookingViewSet(viewsets.ModelViewSet):
             booking.cancel()
         except ValidationError as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'detail': 'Бронирование успешно отменено.'})
+        return Response({'detail': 'Booking successfully cancelled.'})
 
     @swagger_docs['confirm']
     @action(detail=True, methods=['post'])
     @with_booking
     def confirm(self, request, booking):
         if booking.status != BookingStatusChoices.PENDING:
-            return Response({'detail': 'Это бронирование уже обработано.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'This booking has already been processed.'},
+                            status=status.HTTP_400_BAD_REQUEST)
         booking.status = BookingStatusChoices.CONFIRMED
         booking.save()
-        return Response({'detail': 'Бронирование подтверждено.'})
+        return Response({'detail': 'Booking confirmed.'})
 
     @swagger_docs['reject']
     @action(detail=True, methods=['post'])
     @with_booking
     def reject(self, request, booking):
         if booking.status != BookingStatusChoices.PENDING:
-            return Response({'detail': 'Это бронирование уже обработано.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'This booking has already been processed.'},
+                            status=status.HTTP_400_BAD_REQUEST)
         booking.status = BookingStatusChoices.REJECTED
         booking.save()
-        return Response({'detail': 'Бронирование отклонено.'})
+        return Response({'detail': 'Booking rejected.'})

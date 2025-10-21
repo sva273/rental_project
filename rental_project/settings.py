@@ -19,8 +19,8 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY_DJANGO')
-DEBUG = env.bool('DEBUG', default=True)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+DEBUG = env.bool('DEBUG', default=True)  # False для деплоя
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # прописать доменое имя без HTTPS
 
 # Опциональный переключатель между базами данных
 USE_MYSQL = env.bool('MYSQL', default=False)
@@ -59,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'rental_project.urls'
@@ -166,3 +167,5 @@ SWAGGER_SETTINGS = {
 # ---------------------- Email Settings (консоль для разработки) ----------------------
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'no-reply@example.com'
+
+SWAGGER_USE_COMPAT_RENDERERS = False

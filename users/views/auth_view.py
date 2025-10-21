@@ -13,18 +13,18 @@ User = get_user_model()
 
 class AuthViewSet(viewsets.ViewSet):
     """
-    Аутентификация пользователей:
-    - register: регистрация нового пользователя
-    - login: вход в систему
-    - logout: выход из системы
+    User authentication:
+    - register: user registration
+    - login: user login
+    - logout: user logout
     """
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
-        operation_summary="Регистрация пользователя",
-        operation_description="Создаёт нового пользователя и возвращает токен для аутентификации.",
+        operation_summary="User registration",
+        operation_description="Creates a new user and returns an authentication token.",
         request_body=UserSerializer,
-        responses={201: openapi.Response('Пользователь создан', UserSerializer)}
+        responses={201: openapi.Response('User created', UserSerializer)}
     )
     @action(detail=False, methods=['post'])
     def register(self, request):
@@ -38,21 +38,21 @@ class AuthViewSet(viewsets.ViewSet):
 
         else:
             if 'email' in serializer.errors:
-                return Response({'detail': 'Пользователь с таким email уже существует.'}, status=400)
+                return Response({'detail': 'A user with this email already exists.'}, status=400)
             return Response(serializer.errors, status=400)
 
     @swagger_auto_schema(
-        operation_summary="Вход пользователя",
-        operation_description="Проверяет email и пароль, возвращает токен для аутентификации.",
+        operation_summary="User login",
+        operation_description="Validates email and password and returns an authentication token.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             required=['email', 'password'],
             properties={
-                'email': openapi.Schema(type=openapi.TYPE_STRING, description='Email пользователя'),
-                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Пароль пользователя')
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description='User email'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='User password')
             }
         ),
-        responses={200: openapi.Response('Успешный вход', UserSerializer)}
+        responses={200: openapi.Response('Login successful', UserSerializer)}
     )
     @action(detail=False, methods=['post'])
     def login(self, request):
@@ -67,16 +67,16 @@ class AuthViewSet(viewsets.ViewSet):
         return Response(data)
 
     @swagger_auto_schema(
-        operation_summary="Выход пользователя",
-        operation_description="Удаляет текущий токен пользователя, тем самым разлогинивая его.",
-        responses={204: 'Токен удалён, выход выполнен'}
+        operation_summary="User logout",
+        operation_description="Deletes the current user's token, logging them out of the system.",
+        responses={204: 'Token deleted, logout successful'}
     )
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def logout(self, request):
         token = getattr(request, 'auth', None)
         if token:
             token.delete()
-            return Response({'detail': 'Вы вышли из системы'}, status=status.HTTP_204_NO_CONTENT)
-        return Response({'detail': 'Токен не найден'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'You have been logged out'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail': 'Token not found'}, status=status.HTTP_400_BAD_REQUEST)
 
 

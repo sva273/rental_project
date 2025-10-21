@@ -6,11 +6,11 @@ MAX_HISTORY = 50
 
 def record_listing_view(user, listing: Listing):
     """
-    Фиксирует просмотр объявления пользователем:
-    - Проверяет, отличается ли от последнего просмотренного.
-    - Создаёт запись в ViewHistory.
-    - Увеличивает счётчик views_count.
-    - Удаляет старые записи, если превышен лимит.
+    Records a listing view by a user:
+    - Checks whether it differs from the last viewed listing.
+    - Creates a new ViewHistory record.
+    - Increments the listing `views_count` field.
+    - Removes the oldest records if the limit is exceeded.
     """
     last = ViewHistory.objects.filter(user=user).order_by('-viewed_at').first()
     if not last or last.listing != listing:

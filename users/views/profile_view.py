@@ -9,23 +9,23 @@ User = get_user_model()
 
 class ProfileViewSet(viewsets.ModelViewSet):
     """
-    Просмотр и редактирование профиля текущего пользователя.
-    Поддерживаются только методы GET, PUT и PATCH.
+    View and edit the current user's profile.
+    Only GET, PUT, and PATCH methods are supported.
     """
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'put', 'patch']
 
     def get_queryset(self):
-        if getattr(self, 'swagger_fake_view', False):
-            return User.objects.none()
-
         user = self.request.user
         if not user.is_authenticated:
             return User.objects.none()
 
+        # Admin can access all users
         if user.is_staff:
             return User.objects.all()
+
+        # Normal user can only access their own profile
         return User.objects.filter(id=user.id)
 
     def perform_update(self, serializer):
@@ -36,16 +36,16 @@ class ProfileViewSet(viewsets.ModelViewSet):
             user.save()
 
     @swagger_auto_schema(
-        operation_summary="Получить профиль",
-        operation_description="Возвращает данные текущего пользователя.",
+        operation_summary="Retrieve profile",
+        operation_description="Returns the data of the current authenticated user.",
         responses={200: openapi.Response('Success', UserSerializer(many=False))}
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="Обновить профиль",
-        operation_description="Полностью обновляет данные профиля текущего пользователя.",
+        operation_summary="Update profile",
+        operation_description="Completely updates the current user's profile data.",
         request_body=UserSerializer,
         responses={200: openapi.Response('Success', UserSerializer(many=False))}
     )
@@ -53,8 +53,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="Частично обновить профиль",
-        operation_description="Частично обновляет данные профиля текущего пользователя.",
+        operation_summary="Partially update profile",
+        operation_description="Partially updates the current user's profile data.",
         request_body=UserSerializer,
         responses={200: openapi.Response('Success', UserSerializer(many=False))}
     )

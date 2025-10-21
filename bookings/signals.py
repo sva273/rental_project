@@ -8,7 +8,7 @@ from .models import Booking, BookingStatusChoices
 
 def send_console_mail(subject, message, recipient_list):
     """
-    Отправка письма с корректной кодировкой UTF-8, чтобы Subject отображался нормально в консоли.
+    Sends an email with proper UTF-8 encoding so that the Subject displays correctly in the console.
     """
     email = EmailMessage(
         subject=subject,
@@ -26,19 +26,19 @@ def booking_created_or_updated(sender, instance, created, **kwargs):
     tenant_email = instance.tenant.email
 
     if created:
-        subject = f'Новое бронирование: {instance.listing.title}'
-        message_tenant = f'Вы забронировали "{instance.listing.title}". Ожидайте подтверждения.'
-        message_landlord = f'Ваш объект "{instance.listing.title}" был забронирован.'
+        subject = f'New Booking: {instance.listing.title}'
+        message_tenant = f'You have booked "{instance.listing.title}". Please wait for confirmation.'
+        message_landlord = f'Your listing "{instance.listing.title}" has been booked.'
         send_console_mail(subject, message_tenant, [tenant_email])
         send_console_mail(subject, message_landlord, [landlord_email])
     else:
         if instance.status == BookingStatusChoices.CONFIRMED:
-            subject = f'Бронирование подтверждено: {instance.listing.title}'
-            message = f'Бронирование "{instance.listing.title}" подтверждено.'
+            subject = f'Booking Confirmed: {instance.listing.title}'
+            message = f'The booking for "{instance.listing.title}" has been confirmed.'
             send_console_mail(subject, message, [tenant_email, landlord_email])
         elif instance.status == BookingStatusChoices.REJECTED:
-            subject = f'Бронирование отклонено: {instance.listing.title}'
-            message = f'Бронирование "{instance.listing.title}" отклонено.'
+            subject = f'Booking Rejected: {instance.listing.title}'
+            message = f'The booking for "{instance.listing.title}" has been rejected.'
             send_console_mail(subject, message, [tenant_email, landlord_email])
 
 
@@ -46,6 +46,6 @@ def booking_created_or_updated(sender, instance, created, **kwargs):
 def booking_deleted(sender, instance, **kwargs):
     landlord_email = instance.listing.landlord.email
     tenant_email = instance.tenant.email
-    subject = f'Бронирование удалено: {instance.listing.title}'
-    message = f'Бронирование "{instance.listing.title}" было удалено.'
+    subject = f'Booking Deleted: {instance.listing.title}'
+    message = f'The booking for "{instance.listing.title}" has been deleted.'
     send_console_mail(subject, message, [tenant_email, landlord_email])

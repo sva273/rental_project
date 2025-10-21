@@ -14,7 +14,7 @@ class User(AbstractUser):
         max_length=15,
         blank=True,
         null=True,
-        help_text="Номер телефона только цифры"
+        help_text="Phone number digits only"
     )
 
     USERNAME_FIELD = 'email'

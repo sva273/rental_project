@@ -6,8 +6,8 @@ from listings.models import Listing
 
 class SearchHistory(models.Model):
     """
-    История поисковых запросов пользователя.
-    Используется для аналитики и персонализации.
+    History of user search queries.
+    Used for analytics and personalization
     """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -28,17 +28,17 @@ class SearchHistory(models.Model):
 
 class ViewHistory(models.Model):
     """
-    История просмотров объявлений пользователем.
-    Используется для аналитики и сортировки по популярности.
+    History of property views by the user.
+    Used for analytics and ranking by popularity
     """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='view_history'
     )
     listing = models.ForeignKey(
         Listing,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='views'
     )
     viewed_at = models.DateTimeField(auto_now_add=True)
@@ -47,7 +47,7 @@ class ViewHistory(models.Model):
         ordering = ['-viewed_at']
         verbose_name = "View History"
         verbose_name_plural = "View Histories"
-        unique_together = ('user', 'listing', 'viewed_at')  # предотвращает дублирование в пределах одного момента
+        unique_together = ('user', 'listing', 'viewed_at')  # prevents duplication within the same timestamp
 
     def __str__(self):
         return f"{self.user.email} viewed '{self.listing.title}'"

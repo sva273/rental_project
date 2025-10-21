@@ -17,9 +17,9 @@ from drf_yasg import openapi
 
 class ListingViewSet(viewsets.ModelViewSet):
     """
-    Управление объявлениями аренды:
-    - TENANT может только просматривать активные объявления.
-    - LANDLORD и администратор могут создавать, редактировать, удалять и переключать активность.
+     Rental Listing Management:
+    - TENANT can only view active listings.
+    - LANDLORD and admin can create, edit, delete, and toggle active status.
     """
     serializer_class = ListingSerializer
     permission_classes = [IsAuthenticated, IsAdminOrLandlord]
@@ -37,7 +37,7 @@ class ListingViewSet(viewsets.ModelViewSet):
 
         queryset = Listing.objects.filter(is_deleted=False)
 
-        # Фильтрация по цене
+        # Filter by price
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
         try:
@@ -48,20 +48,21 @@ class ListingViewSet(viewsets.ModelViewSet):
         except ValueError:
             pass
 
-        # LANDLORD — только свои
+        # LANDLORD — only their own listings
         if user.groups.filter(name__iexact='LANDLORD').exists() and not user.is_staff:
             queryset = queryset.filter(landlord=user)
-        # TENANT — только активные
+
+        # TENANT — only active listings
         elif not user.is_staff:
             queryset = queryset.filter(is_active=True)
 
-        # Аннотация рейтинга для всех
+        # Annotate average rating
         return queryset.annotate(avg_rating=Avg('reviews__rating'))
 
     def get_ordering(self):
         ordering = self.request.query_params.get('ordering')
         if ordering:
-            # Поддержка сортировки по average_rating → avg_rating
+            # Support ordering by average_rating → avg_rating
             if 'average_rating' in ordering:
                 return [ordering.replace('average_rating', 'avg_rating')]
             return [ordering]
@@ -71,77 +72,85 @@ class ListingViewSet(viewsets.ModelViewSet):
         serializer.save(landlord=self.request.user)
 
     @swagger_auto_schema(
-        operation_summary="Список объявлений",
+        operation_summary="List Listings",
         operation_description="""
-        Возвращает список объявлений:
-        - Администратор видит все объявления.
-        - LANDLORD — только свои.
-        - TENANT — только активные.
-        """,
+            Returns a list of listings:
+            - Admin sees all listings.
+            - LANDLORD sees only their own listings.
+            - TENANT sees only active listings.
+            """,
         manual_parameters=[
-            openapi.Parameter('search', openapi.IN_QUERY, description="Поиск по title, description, city, country", type=openapi.TYPE_STRING),
-            openapi.Parameter('ordering', openapi.IN_QUERY, description="Сортировка по price_per_day, created_at", type=openapi.TYPE_STRING),
-            openapi.Parameter('min_price', openapi.IN_QUERY, description="Минимальная цена", type=openapi.TYPE_NUMBER),
-            openapi.Parameter('max_price', openapi.IN_QUERY, description="Максимальная цена", type=openapi.TYPE_NUMBER),
-            openapi.Parameter('city', openapi.IN_QUERY, description="Город", type=openapi.TYPE_STRING),
-            openapi.Parameter('country', openapi.IN_QUERY, description="Страна", type=openapi.TYPE_STRING),
-            openapi.Parameter('property_type', openapi.IN_QUERY, description="Тип жилья", type=openapi.TYPE_STRING),
+            openapi.Parameter('search', openapi.IN_QUERY, description="Search by title, description, city, country",
+                              type=openapi.TYPE_STRING),
+            openapi.Parameter('ordering', openapi.IN_QUERY, description="Ordering by price_per_day, created_at",
+                              type=openapi.TYPE_STRING),
+            openapi.Parameter('min_price', openapi.IN_QUERY, description="Minimum price", type=openapi.TYPE_NUMBER),
+            openapi.Parameter('max_price', openapi.IN_QUERY, description="Maximum price", type=openapi.TYPE_NUMBER),
+            openapi.Parameter('city', openapi.IN_QUERY, description="City", type=openapi.TYPE_STRING),
+            openapi.Parameter('country', openapi.IN_QUERY, description="Country", type=openapi.TYPE_STRING),
+            openapi.Parameter('property_type', openapi.IN_QUERY, description="Property type", type=openapi.TYPE_STRING),
         ],
         responses={200: ListingSerializer(many=True)}
     )
+
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="Создать объявление",
-        operation_description="Создаёт новое объявление. Доступно только LANDLORD и администратору.",
+        operation_summary="Create Listing",
+        operation_description="Create a new listing. Only available to LANDLORD or admin.",
         responses={201: ListingSerializer}
     )
+
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="Получить объявление",
-        operation_description="Получает объявление по ID. TENANT видит только активные. Также фиксирует просмотр в истории.",
-        responses={200: ListingSerializer, 403: "Нет доступа"}
+        operation_summary="Retrieve Listing",
+        operation_description="Get a listing by ID. TENANT sees only active listings. Also records view history.",
+        responses={200: ListingSerializer, 403: "Forbidden"}
     )
+
     def retrieve(self, request, *args, **kwargs):
         listing = self.get_object()
         user = request.user
 
-        # Фиксация просмотра для TENANT
+        # Record view for TENANT
         if not user.is_staff and not user.groups.filter(name__iexact='LANDLORD').exists():
             record_listing_view(user, listing)
 
         return super().retrieve(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="Обновить объявление",
-        operation_description="Обновляет объявление. Только владелец или админ.",
-        responses={200: ListingSerializer, 403: "Нет доступа"}
+        operation_summary="Update Listing",
+        operation_description="Update a listing. Only the owner or admin can update.",
+        responses={200: ListingSerializer, 403: "Forbidden"}
     )
+
     def update(self, request, *args, **kwargs):
         listing = self.get_object()
         self.check_object_permissions(request, listing)
         return super().update(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        operation_summary="Удалить объявление",
-        operation_description="Помечает объявление как удалённое (is_deleted=True). Только владелец или админ.",
-        responses={204: "Удалено", 403: "Нет прав"}
+        operation_summary="Delete Listing",
+        operation_description="Marks the listing as deleted (is_deleted=True). Only the owner or admin.",
+        responses={204: "Deleted", 403: "Forbidden"}
     )
+
     def destroy(self, request, *args, **kwargs):
         listing = self.get_object()
         self.check_object_permissions(request, listing)
         listing.is_deleted = True
         listing.save()
-        return Response({'detail': 'Объявление помечено как удалённое.'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail': 'Listing marked as deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
     @swagger_auto_schema(
-        operation_summary="Переключить активность объявления",
-        operation_description="Меняет статус активности объявления (is_active). Только владелец или админ.",
-        responses={200: "OK", 403: "Нет прав"}
+        operation_summary="Toggle Listing Active Status",
+        operation_description="Toggle the active status of a listing (is_active). Only the owner or admin.",
+        responses={200: "OK", 403: "Forbidden"}
     )
+
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated, IsAdminOrLandlord])
     def toggle_active(self, request, pk=None):
         listing = self.get_object()

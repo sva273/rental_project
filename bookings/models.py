@@ -6,22 +6,37 @@ from django.conf import settings
 
 from listings.models import Listing
 from .choices import BookingStatusChoices
+from .validators import validate_booking_dates
 
 # Create your models here.
 
-CHECK_IN_TIME = time(14, 0)   # Время заезда: 14:00
-CHECK_OUT_TIME = time(12, 0)  # Время выезда: 12:00
+CHECK_IN_TIME = time(14, 0)
+CHECK_OUT_TIME = time(12, 0)
+
+
+class BookingQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(is_deleted=False)
+
+    def deleted(self):
+        return self.filter(is_deleted=True)
+
+    def all_with_deleted(self):
+        return self.all()
+
+
+class BookingManager(models.Manager):
+    def get_queryset(self):
+        return BookingQuerySet(self.model, using=self._db).active()
+
+    def all_with_deleted(self):
+        return self.get_queryset().all_with_deleted()
+
+    def deleted(self):
+        return self.get_queryset().deleted()
 
 
 class Booking(models.Model):
-    """
-    Модель бронирования жилья:
-    - Связана с объектом Listing и пользователем (tenant).
-    - Поддерживает посуточную аренду с учётом времени заезда/выезда.
-    - Рассчитывает стоимость с учётом парковки.
-    - Поддерживает soft delete и статусную логику.
-    """
-
     listing = models.ForeignKey(
         Listing,
         on_delete=models.PROTECT,
@@ -48,12 +63,15 @@ class Booking(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
-        help_text="Общая сумма бронирования (включая парковку, если есть)"
+        help_text="Total booking price (including parking if selected)"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
+
+    objects = BookingManager()
+    all_objects = models.Manager()
 
     class Meta:
         db_table = 'bookings'
@@ -62,58 +80,44 @@ class Booking(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        parking_info = " + Парковка" if self.parking_included else ""
-        return (f"Бронь #{self.id} — {self.listing.title} "
+        parking_info = " + Parking" if self.parking_included else ""
+        return (f"Booking #{self.id} — {self.listing.title} "
                 f"[{self.start_date} → {self.end_date}] ({self.status}){parking_info}")
 
     @property
     def start_datetime(self):
-        """Дата и время заезда (14:00 в день начала)"""
         return make_aware(datetime.combine(self.start_date, CHECK_IN_TIME))
 
     @property
     def end_datetime(self):
-        """Дата и время выезда (12:00 в день окончания)"""
         return make_aware(datetime.combine(self.end_date, CHECK_OUT_TIME))
 
     @property
     def duration_days(self):
-        """Количество дней аренды (включая последний день)"""
         return (self.end_date - self.start_date).days + 1
 
     def clean(self):
-        """
-        Валидация:
-        - Дата начала не может быть позже даты окончания.
-        - Объект должен поддерживать суточную аренду.
-        - Проверка пересечения с другими активными бронированиями с учётом времени.
-        """
-        if self.start_date and self.end_date and self.start_date > self.end_date:
-            raise ValidationError("Дата начала бронирования не может быть позже даты окончания.")
+        validate_booking_dates(self.start_date, self.end_date)
 
         if not self.listing.daily_enabled:
-            raise ValidationError("Это объявление не поддерживает посуточную аренду.")
+            raise ValidationError("This listing does not support daily rental.")
 
-        active_bookings = Booking.objects.filter(
+        overlapping_bookings = Booking.all_objects.filter(
             listing=self.listing,
-            status__in=[BookingStatusChoices.PENDING, BookingStatusChoices.CONFIRMED]
+            status__in=[BookingStatusChoices.PENDING, BookingStatusChoices.CONFIRMED],
+            is_deleted=False
         ).exclude(id=self.id)
 
-        for booking in active_bookings:
+        for booking in overlapping_bookings:
             if booking.start_datetime < self.end_datetime and booking.end_datetime > self.start_datetime:
-                raise ValidationError("Это жильё уже забронировано на указанные даты/время.")
+                raise ValidationError("The selected dates are already booked.")
 
     def calculate_total_price(self):
-        """
-        Расчёт общей стоимости:
-        - Учитывает цену за сутки.
-        - Добавляет стоимость парковки, если включена.
-        """
         listing = self.listing
         days_count = self.duration_days
 
         if not listing.price_per_day or listing.price_per_day <= 0:
-            raise ValidationError("У объявления не указана корректная цена за сутки.")
+            raise ValidationError("The listing has an invalid daily price.")
 
         total = listing.price_per_day * days_count
 
@@ -123,50 +127,37 @@ class Booking(models.Model):
         return total
 
     def save(self, *args, **kwargs):
-        """
-        Сохранение:
-        - Выполняет валидацию.
-        - Пересчитывает `total_price` перед сохранением.
-        """
+        if self.pk:
+            original = Booking.all_objects.get(pk=self.pk)
+            if original.status == BookingStatusChoices.CONFIRMED:
+                if original.start_date != self.start_date or original.end_date != self.end_date:
+                    raise ValidationError("Dates cannot be modified after the booking is confirmed.")
         self.clean()
         self.total_price = self.calculate_total_price()
         super().save(*args, **kwargs)
 
     def can_cancel(self, hours_before=24):
-        """
-        Проверка возможности отмены:
-        - Отменить можно не позднее чем за `hours_before` часов до начала.
-        """
         cancel_deadline = self.start_datetime - timedelta(hours=hours_before)
         return now() < cancel_deadline
 
     def cancel(self):
-        """
-        Отмена бронирования:
-        - Проверяет возможность отмены.
-        - Меняет статус на CANCELLED.
-        - Убирает парковку.
-        """
         if not self.can_cancel():
-            raise ValidationError("Отмена невозможна менее чем за 24 часа до начала бронирования.")
+            raise ValidationError("Cancellation is not possible less than 24 hours before check-in.")
         self.status = BookingStatusChoices.CANCELLED
         self.parking_included = False
         self.save()
 
     def confirm(self):
-        """
-        Подтверждение бронирования:
-        - Доступно только для ожидающих заявок.
-        """
         if self.status != BookingStatusChoices.PENDING:
-            raise ValidationError("Можно подтвердить только ожидающее бронирование.")
+            raise ValidationError("Only bookings with status 'Pending' can be confirmed.")
         self.status = BookingStatusChoices.CONFIRMED
         self.save()
 
     def delete(self, *args, **kwargs):
-        """
-        Soft delete:
-        - Не удаляет запись физически, только помечает как удалённую.
-        """
         self.is_deleted = True
         self.save()
+
+    def restore(self):
+        if self.is_deleted:
+            self.is_deleted = False
+            self.save()

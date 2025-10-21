@@ -8,7 +8,7 @@ from .models import Listing
 
 def send_console_mail(subject, message, recipient_list):
     """
-    Отправка письма с корректной кодировкой UTF-8, чтобы Subject отображался нормально в консоли.
+    Send an email with correct UTF-8 encoding so that the Subject displays correctly in the console.
     """
     email = EmailMessage(
         subject=subject,
@@ -24,19 +24,26 @@ def send_console_mail(subject, message, recipient_list):
 def listing_created_or_updated(sender, instance, created, **kwargs):
     update_fields = kwargs.get('update_fields')
 
-    # Если создано — всегда отправляем
+    # If created — always send notification
     if created:
-        subject = f'Новое объявление создано: {instance.title}'
-        message = f'Ваше объявление \"{instance.title}\" успешно размещено.'
+        subject = f'New Listing Created: {instance.title}'
+        message = f'Your listing "{instance.title}" has been successfully published.'
         send_console_mail(subject, message, [instance.landlord.email])
         return
 
-    # Если обновлялось только поле views_count — не отправляем письмо
+    # If only the views_count field was updated — do not send notification
     if update_fields is not None and update_fields == {'views_count'}:
         return
 
-    # Иначе — считаем, что это значимое обновление
-    subject = f'Объявление обновлено: {instance.title}'
-    message = f'Ваше объявление \"{instance.title}\" было обновлено.'
+    # Otherwise — consider it a significant update
+    subject = f'Listing Updated: {instance.title}'
+    message = f'Your listing "{instance.title}" has been updated.'
     send_console_mail(subject, message, [instance.landlord.email])
+
+
+
+
+
+
+
 

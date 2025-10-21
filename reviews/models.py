@@ -14,8 +14,10 @@ class Review(models.Model):
     is_approved = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('listing', 'tenant')
         ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(fields=['listing', 'tenant'], name='unique_review_per_listing_tenant')
+        ]
 
     def __str__(self):
         return f"Review {self.id} by {self.tenant.email}"
