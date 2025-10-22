@@ -43,7 +43,7 @@ property listings, bookings, reviews, analytics, and admin management — all de
 - **Testing:** Pytest / Django TestCase
 
 ---
-
+```
 ## 🗂 Project Structure
 
 rental_project/
@@ -82,14 +82,16 @@ rental_project/
 │   ├── __init__.py
 │   ├── admin.py               # 🛠 Admin panel configuration for bookings
 │   ├── apps.py
-│   ├── choises.py             # 📋 Enum definitions for booking statuses and types
+│   ├── choices.py             # 📋 Enum definitions for booking statuses and types
 │   ├── models.py              # 🧩 Booking-related database models
 │   ├── permissions.py         # 🔐 Access control for booking endpoints
 │   ├── serializers.py         # 🔄 DRF serializers for booking data
 │   ├── signals.py             # 📬 Signal handlers (e.g. email notifications on status change)
-│   ├── tests.py
+│   ├── config.py
+│   ├── validators.py
 │   ├── urls.py
 │   ├── views.py
+│   ├── tests/
 │   └── migrations/
 
 # ── App: Listings ──
@@ -101,10 +103,10 @@ rental_project/
 │   ├── permissions.py         # 🔐 Access control for listing endpoints
 │   ├── serializers.py         # 🔄 DRF serializers for listing data
 │   ├── signals.py             # 📬 Signal handlers (e.g. auto-updates or notifications)
-│   ├── tests.py
 │   ├── urls.py
 │   ├── views.py
 │   ├── migrations/
+│   ├── tests/
 │   └── choices/               # 📋 Field choices for listings
 │       ├── __init__.py
 │       ├── bathroom_type.py   # 🚿 Enum for bathroom types (e.g. shared, private)
@@ -165,7 +167,7 @@ rental_project/
 └── utils/                     # 🧰 General-purpose helper scripts and tools
     ├── __init__.py
     └── generate_swagger_yaml # 🧪 Script to auto-generate Swagger/OpenAPI spec
-
+```
 
 ---
 
