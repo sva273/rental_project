@@ -1,4 +1,4 @@
-from rest_framework import viewsets, mixins, filters, status
+from rest_framework import viewsets, mixins, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -12,11 +12,14 @@ from listings.models import Listing
 from listings.serializers import ListingSerializer
 from rest_framework import serializers
 
-MAX_HISTORY = 50  # maximum number of history records per user
+MAX_HISTORY = 50  # Maximum number of history records per user
 
 
 # --- Serializer for popular keywords response ---
 class PopularKeywordSerializer(serializers.Serializer):
+    """
+    Serializer for returning popular search keywords with their counts.
+    """
     keyword = serializers.CharField()
     count = serializers.IntegerField()
 
@@ -25,9 +28,14 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
                          mixins.CreateModelMixin,
                          viewsets.GenericViewSet):
     """
-    ViewHistoryViewSet — manages user's listing view history.
-    """
+    ViewHistoryViewSet manages user's listing view history.
 
+    Features:
+        - Lists all views of the current user.
+        - Records a new view (automatically avoids duplicates in a row).
+        - Provides popular listings by view count.
+        - Trims history to a maximum of MAX_HISTORY records per user.
+    """
     serializer_class = ViewHistorySerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
@@ -36,22 +44,42 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
     queryset = ViewHistory.objects.all()
 
     def get_queryset(self):
+        """
+        Returns the user's view history.
+        If the user is not authenticated, returns an empty queryset.
+        """
         user = self.request.user
         if not user.is_authenticated:
             return ViewHistory.objects.none()
         return ViewHistory.objects.filter(user=user)
 
     def perform_create(self, serializer):
+        """
+        Records a new view when a ViewHistory object is created.
+        """
         listing = serializer.validated_data['listing']
         self.record_view(self.request.user, listing)
 
     @staticmethod
     def record_view(user, listing):
+        """
+        Handles the creation of a view record:
+        - Avoids recording consecutive duplicate views.
+        - Increments the listing's views_count atomically.
+        - Deletes oldest records if the user's history exceeds MAX_HISTORY.
+        """
+        # Get the most recent view for the user
         last = ViewHistory.objects.filter(user=user).order_by('-viewed_at').first()
+
+        # Only create a new record if the last viewed listing is different or none exists
         if not last or last.listing != listing:
             ViewHistory.objects.create(user=user, listing=listing)
+
+            # Increment the listing's view count
             listing.views_count = F('views_count') + 1
             listing.save(update_fields=['views_count'])
+
+            # Trim the oldest records if history exceeds MAX_HISTORY
             excess = ViewHistory.objects.filter(user=user).count() - MAX_HISTORY
             if excess > 0:
                 ViewHistory.objects.filter(user=user).order_by('viewed_at')[:excess].delete()
@@ -71,10 +99,16 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         responses={200: openapi.Response(description="OK", schema=ViewHistorySerializer(many=True))}
     )
     def list(self, request, *args, **kwargs):
+        """
+        Lists the current user's view history, optionally filtered by `from_date`.
+        """
         queryset = self.get_queryset()
         from_date = request.query_params.get('from_date')
+
+        # Filter views if a 'from_date' query param is provided
         if from_date:
             queryset = queryset.filter(viewed_at__gte=from_date)
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -85,6 +119,9 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         responses={201: openapi.Response(description="Created", schema=ViewHistorySerializer())}
     )
     def create(self, request, *args, **kwargs):
+        """
+        Creates a new ViewHistory record for the user.
+        """
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -94,6 +131,9 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
     )
     @action(detail=False, methods=['get'], url_path='popular')
     def popular_listings(self, request):
+        """
+        Returns the top 50 popular listings based on view counts.
+        """
         listings = Listing.objects.filter(is_deleted=False).order_by('-views_count')[:50]
         serializer = ListingSerializer(listings, many=True)
         return Response(serializer.data)
@@ -103,9 +143,14 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
                            mixins.CreateModelMixin,
                            viewsets.GenericViewSet):
     """
-    SearchHistoryViewSet — manages user's search keyword history.
-    """
+    SearchHistoryViewSet manages user's search keyword history.
 
+    Features:
+        - Lists all searches of the current user.
+        - Adds new search keywords.
+        - Provides popular search keywords across all users.
+        - Trims history to MAX_HISTORY per user.
+    """
     serializer_class = SearchHistorySerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
@@ -114,16 +159,29 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
     queryset = SearchHistory.objects.all()
 
     def get_queryset(self):
+        """
+        Returns the search history for the current user.
+        """
         user = self.request.user
         if not user.is_authenticated:
             return SearchHistory.objects.none()
         return SearchHistory.objects.filter(user=user)
 
     def perform_create(self, serializer):
+        """
+        Adds a new search keyword for the user, avoiding duplicates in a row
+        and trimming history beyond MAX_HISTORY.
+        """
         keyword = serializer.validated_data['keyword']
+
+        # Get the last keyword searched by this user
         last = SearchHistory.objects.filter(user=self.request.user).order_by('-searched_at').first()
+
+        # Only create a new record if it differs from the last one
         if not last or last.keyword != keyword:
             serializer.save(user=self.request.user)
+
+            # Trim oldest entries if the count exceeds MAX_HISTORY
             excess = SearchHistory.objects.filter(user=self.request.user).count() - MAX_HISTORY
             if excess > 0:
                 SearchHistory.objects.filter(user=self.request.user).order_by('searched_at')[:excess].delete()
@@ -143,10 +201,16 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
         responses={200: openapi.Response(description="OK", schema=SearchHistorySerializer(many=True))}
     )
     def list(self, request, *args, **kwargs):
+        """
+        Lists the current user's search history, optionally filtered by `from_date`.
+        """
         queryset = self.get_queryset()
         from_date = request.query_params.get('from_date')
+
+        # Filter searches if a 'from_date' query param is provided
         if from_date:
             queryset = queryset.filter(searched_at__gte=from_date)
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -157,6 +221,9 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
         responses={201: openapi.Response(description="Created", schema=SearchHistorySerializer())}
     )
     def create(self, request, *args, **kwargs):
+        """
+        Creates a new SearchHistory record for the user.
+        """
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -166,6 +233,9 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
     )
     @action(detail=False, methods=['get'], url_path='popular')
     def popular_keywords(self, request):
+        """
+        Returns the top 50 most frequent search keywords across all users.
+        """
         keywords = (
             SearchHistory.objects
             .values('keyword')

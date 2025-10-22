@@ -65,4 +65,4 @@ def test_readonly_fields(listing, tenant):
     data = serializer.data
     assert data['tenant_email'] == tenant.email
     assert data['listing_title'] == listing.title
-    assert float(data['total_price']) == (100 + 20) * 3
+    assert float(data['total_price']) == (100 + 20) * 2

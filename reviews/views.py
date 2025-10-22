@@ -16,41 +16,53 @@ from reviews.permissions import IsAuthorOrReadOnly
 
 class ReviewViewSet(viewsets.ModelViewSet):
     """
-    Review management:
-    - TENANT can create and edit their own reviews.
-    - LANDLORD can see reviews for their own listings.
-    - Admin can view and approve all reviews.
+    Review Management ViewSet
+
+    Roles and Permissions:
+    - TENANT: can create reviews for listings they stayed in and edit their own reviews.
+    - LANDLORD: can view reviews for their own listings (approved only).
+    - ADMIN: can view, approve, and manage all reviews.
+
+    Serializer:
+    - Uses ReviewSerializer for all operations.
     """
+
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
 
     def get_queryset(self):
         """
-        Returns reviews depending on user role:
+        Returns reviews according to user role:
         - Admin sees all reviews.
-        - LANDLORD sees only reviews on their listings.
-        - TENANT sees only their approved reviews.
+        - LANDLORD sees only reviews on their listings (approved only).
+        - TENANT sees only their own approved reviews.
         """
         user = self.request.user
         if user.is_staff:
             return Review.objects.all()
         if user.groups.filter(name__iexact='LANDLORD').exists():
             return Review.objects.filter(listing__landlord=user, is_approved=True)
+        # TENANT
         return Review.objects.filter(tenant=user, is_approved=True)
 
     def perform_create(self, serializer):
         """
-        Creates a review if the current user is a TENANT and has a confirmed, completed booking.
-        Review is created as unapproved (awaiting approval).
+        Creates a new review if the user is a TENANT and has a completed booking.
+
+        Logic:
+        1. If user is STAFF or LANDLORD → raise ValidationError.
+        2. Check for a confirmed booking with an end date in the past.
+           - If none exists → raise ValidationError.
+        3. Save review with tenant=user and is_approved=False.
         """
         listing = serializer.validated_data['listing']
         user = self.request.user
 
-        # Prevent review creation for LANDLORD or STAFF
+        # --- Prevent non-tenants from creating reviews ---
         if user.is_staff or user.groups.filter(name__iexact='LANDLORD').exists():
             raise ValidationError("Only a tenant can submit a review.")
 
-        # Check for completed confirmed booking
+        # --- Ensure tenant has completed a confirmed booking ---
         has_completed_booking = Booking.objects.filter(
             listing=listing,
             tenant=user,
@@ -63,13 +75,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
         serializer.save(tenant=user, is_approved=False)
 
+    # --- CRUD and list methods with Swagger documentation ---
     @swagger_auto_schema(
         operation_summary="List reviews",
         operation_description="Returns a list of reviews depending on the user's role: admin — all, "
                               "tenant — their own approved, landlord — reviews for their listings",
         responses={200: openapi.Response('Success', ReviewSerializer(many=True))}
     )
-
     def list(self, request, *args, **kwargs):
         """Get a list of reviews respecting user role."""
         return super().list(request, *args, **kwargs)
@@ -118,6 +130,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         """Delete a review (author only)."""
         return super().destroy(request, *args, **kwargs)
 
+    # --- Custom action for approving reviews ---
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     @swagger_auto_schema(
         operation_summary="Approve review",
@@ -128,6 +141,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
         """
         Approves a review (sets is_approved=True).
         Available only to admins.
+        Steps:
+        1. Retrieve the review object.
+        2. Set is_approved=True.
+        3. Save the review.
+        4. Return the serialized review.
         """
         review = self.get_object()
         review.is_approved = True

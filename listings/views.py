@@ -16,9 +16,23 @@ from analytics.services import record_listing_view
 class ListingViewSet(viewsets.ModelViewSet):
     """
     Rental Listing Management:
-    - TENANT can only view active listings.
-    - LANDLORD and ADMIN can create, update, delete, and toggle listing status.
+
+    Roles and permissions:
+    - TENANT:
+        - Can only view active listings.
+        - Listing views are recorded for analytics.
+    - LANDLORD:
+        - Can create, update, delete their own listings.
+        - Can toggle the active status of their listings.
+    - ADMIN:
+        - Full access to all listings.
+
+    Query filtering and ordering:
+    - Supports search by title, description, city, country.
+    - Supports ordering by price_per_day, created_at, average_rating.
+    - Supports filters: property_type, country, city, is_active, min_price, max_price.
     """
+
     serializer_class = ListingSerializer
     permission_classes = [IsAuthenticated, IsAdminOrLandlord]
 
@@ -29,10 +43,16 @@ class ListingViewSet(viewsets.ModelViewSet):
     filterset_fields = ['property_type', 'country', 'city', 'is_active']
 
     def get_queryset(self):
+        """
+        Returns listings based on the user's role and optional filters.
+        Adds annotation 'average_rating' for sorting.
+        """
         user = self.request.user
         queryset = Listing.objects.filter(is_deleted=False)
 
-        # Filter by price range
+        queryset = queryset.annotate(average_rating_value=Avg('reviews__rating'))
+
+        # Price filtering
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
         try:
@@ -43,10 +63,9 @@ class ListingViewSet(viewsets.ModelViewSet):
         except ValueError:
             pass
 
-        # LANDLORD sees only their own listings
+        # Role-based filtering
         if user.groups.filter(name__iexact='LANDLORD').exists() and not user.is_staff:
             queryset = queryset.filter(landlord=user)
-        # TENANT sees only active listings
         elif not user.is_staff:
             queryset = queryset.filter(is_active=True)
 
@@ -156,4 +175,3 @@ class ListingViewSet(viewsets.ModelViewSet):
         listing.is_active = not listing.is_active
         listing.save()
         return Response({'is_active': listing.is_active})
-

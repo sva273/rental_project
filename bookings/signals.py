@@ -1,51 +1,65 @@
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
-from django.core.mail import EmailMessage
-from django.conf import settings
 
 from .models import Booking, BookingStatusChoices
+from .config import (
+    notify_new_booking,
+    notify_status_change,
+    notify_booking_dates_changed
+)
 
 
-def send_console_mail(subject, message, recipient_list):
+@receiver(pre_save, sender=Booking)
+def cache_original_dates(sender, instance, **kwargs):
     """
-    Sends an email with proper UTF-8 encoding so that the Subject displays correctly in the console.
+    Cache original start_date and end_date before saving.
     """
-    email = EmailMessage(
-        subject=subject,
-        body=message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=recipient_list,
-    )
-    email.encoding = 'utf-8'
-    email.send()
+    if instance.pk:
+        try:
+            original = Booking.all_objects.get(pk=instance.pk)
+            instance._original_start_date = original.start_date
+            instance._original_end_date = original.end_date
+        except Booking.DoesNotExist:
+            instance._original_start_date = None
+            instance._original_end_date = None
 
 
 @receiver(post_save, sender=Booking)
 def booking_created_or_updated(sender, instance, created, **kwargs):
+    """
+    Handles Booking creation and update events.
+
+    - On creation: sends notifications for a new booking.
+    - On update:
+        - Sends notifications if booking dates have changed.
+        - Sends notifications if booking status changed to confirmed or rejected.
+    """
     landlord_email = instance.listing.landlord.email
     tenant_email = instance.tenant.email
 
     if created:
-        subject = f'New Booking: {instance.listing.title}'
-        message_tenant = f'You have booked "{instance.listing.title}". Please wait for confirmation.'
-        message_landlord = f'Your listing "{instance.listing.title}" has been booked.'
-        send_console_mail(subject, message_tenant, [tenant_email])
-        send_console_mail(subject, message_landlord, [landlord_email])
+        # New booking
+        notify_new_booking(instance.listing.title, landlord_email, tenant_email)
     else:
+        # Check if dates changed
+        original_start = getattr(instance, "_original_start_date", None)
+        original_end = getattr(instance, "_original_end_date", None)
+        if original_start and original_end:
+            if original_start != instance.start_date or original_end != instance.end_date:
+                notify_booking_dates_changed(instance, original_start, original_end)
+
+        # Check status changes
         if instance.status == BookingStatusChoices.CONFIRMED:
-            subject = f'Booking Confirmed: {instance.listing.title}'
-            message = f'The booking for "{instance.listing.title}" has been confirmed.'
-            send_console_mail(subject, message, [tenant_email, landlord_email])
+            notify_status_change(instance.listing.title, "confirmed", landlord_email, tenant_email)
         elif instance.status == BookingStatusChoices.REJECTED:
-            subject = f'Booking Rejected: {instance.listing.title}'
-            message = f'The booking for "{instance.listing.title}" has been rejected.'
-            send_console_mail(subject, message, [tenant_email, landlord_email])
+            notify_status_change(instance.listing.title, "rejected", landlord_email, tenant_email)
 
 
 @receiver(post_delete, sender=Booking)
 def booking_deleted(sender, instance, **kwargs):
+    """
+    Handles Booking deletion events.
+    """
     landlord_email = instance.listing.landlord.email
     tenant_email = instance.tenant.email
-    subject = f'Booking Deleted: {instance.listing.title}'
-    message = f'The booking for "{instance.listing.title}" has been deleted.'
-    send_console_mail(subject, message, [tenant_email, landlord_email])
+    notify_status_change(instance.listing.title, "deleted", landlord_email, tenant_email)

@@ -68,7 +68,7 @@ def test_total_price_with_parking(listing, tenant):
         parking_included=True
     )
     total = booking.calculate_total_price()
-    assert total == (100 + 20) * 3
+    assert total == (100 + 20) * 2
 
 @pytest.mark.django_db
 def test_total_price_without_parking(listing, tenant):
@@ -80,7 +80,7 @@ def test_total_price_without_parking(listing, tenant):
         parking_included=False
     )
     total = booking.calculate_total_price()
-    assert total == 100 * 3
+    assert total == 100 * 2
 
 @pytest.mark.django_db
 def test_confirm_booking(listing, tenant):

@@ -5,6 +5,13 @@ from datetime import datetime, time
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
+    """
+        Admin interface for the Booking model.
+
+        Displays booking information, allows filtering, searching,
+        and bulk actions like confirming, cancelling bookings or removing parking.
+        """
+
     list_display = (
         'id',
         'listing',
@@ -65,7 +72,7 @@ class BookingAdmin(admin.ModelAdmin):
 
     def duration_days(self, obj):
         """Number of rental days"""
-        return (obj.end_date - obj.start_date).days + 1
+        return (obj.end_date - obj.start_date).days
     duration_days.short_description = 'Days'
 
     def formatted_start_datetime(self, obj):
@@ -86,6 +93,15 @@ class BookingAdmin(admin.ModelAdmin):
 
     @admin.action(description="Mark selected bookings as Confirmed")
     def mark_as_confirmed(self, request, queryset):
+        """
+                Bulk action to mark selected bookings as Confirmed.
+
+                Args:
+                    request: HttpRequest object.
+                    queryset: Queryset of selected Booking instances.
+
+                Sends a success message after completion.
+                """
         updated = 0
         for booking in queryset:
             booking.status = BookingStatusChoices.CONFIRMED
@@ -95,6 +111,15 @@ class BookingAdmin(admin.ModelAdmin):
 
     @admin.action(description="Mark selected bookings as Cancelled")
     def mark_as_cancelled(self, request, queryset):
+        """
+                Bulk action to mark selected bookings as Cancelled (Rejected).
+
+                Args:
+                    request: HttpRequest object.
+                    queryset: Queryset of selected Booking instances.
+
+                Sends a warning message after completion.
+                """
         updated = 0
         for booking in queryset:
             booking.status = BookingStatusChoices.REJECTED
@@ -104,6 +129,15 @@ class BookingAdmin(admin.ModelAdmin):
 
     @admin.action(description="Remove parking from selected bookings")
     def remove_parking(self, request, queryset):
+        """
+                Bulk action to remove parking from selected bookings.
+
+                Args:
+                    request: HttpRequest object.
+                    queryset: Queryset of selected Booking instances.
+
+                Sends an info message after completion.
+                """
         updated = 0
         for booking in queryset:
             booking.parking_included = False

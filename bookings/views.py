@@ -11,8 +11,15 @@ from .serializers import BookingSerializer
 from .permissions import IsAdminOrBookingParticipant
 
 
-# --- Custom decorator to extract and check object permissions ---
 def with_booking(func):
+    """
+    Decorator to retrieve a Booking instance and check object permissions.
+    Args:
+        func: The view method to wrap.
+    Returns:
+        The wrapped view function with `booking` argument.
+    """
+
     def wrapper(self, request, pk=None, *args, **kwargs):
         booking = self.get_object()
         self.check_object_permissions(request, booking)
@@ -23,29 +30,54 @@ def with_booking(func):
 
 class BookingViewSet(viewsets.ModelViewSet):
     """
-    Booking management:
-    - TENANT can create, cancel, and view their own bookings.
-    - LANDLORD can confirm or reject bookings for their listings.
-    - ADMIN can view and manage all bookings.
+    ViewSet for managing bookings.
+
+    Permissions:
+        - TENANT: Can create, cancel, and view their own bookings.
+        - LANDLORD: Can confirm or reject bookings for their listings.
+        - ADMIN/STAFF: Can view and manage all bookings.
+    Features:
+        - CRUD operations for bookings.
+        - Custom actions: cancel, confirm, reject.
+        - Role-based queryset filtering.
+        - Swagger documentation for all endpoints.
     """
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticated, IsAdminOrBookingParticipant]
 
     def get_queryset(self):
+        """
+        Return the queryset of bookings depending on the user's role.
+
+        Returns:
+            QuerySet: Bookings visible to the current user.
+        """
         user = self.request.user
+
+        # If the user is not authenticated, return an empty queryset
         if not user.is_authenticated:
             return Booking.objects.none()
 
+        # If the user is admin or staff, return all bookings
         if user.is_staff or user.is_superuser:
             return Booking.objects.all()
 
+        # If the user is a landlord, return bookings for their listings only
         if user.groups.filter(name__iexact='LANDLORD').exists():
             return Booking.objects.filter(listing__landlord=user)
 
-        # TENANT
+        ## Otherwise, the user is a tenant; return their own bookings
         return Booking.objects.filter(tenant=user)
 
     def perform_create(self, serializer):
+        """
+        Set tenant and default status before saving a new booking.
+
+        Args:
+            serializer (BookingSerializer): The serializer instance for creating a booking.
+        """
+
+        # Set tenant as current user and status as PENDING for new bookings
         serializer.save(tenant=self.request.user, status=BookingStatusChoices.PENDING)
 
     # --- Swagger аннотации ---
@@ -133,34 +165,82 @@ class BookingViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
     # --- Custom actions ---
-    @swagger_docs['cancel']
+    @swagger_auto_schema(
+        operation_summary="Cancel Booking",
+        operation_description="TENANT can cancel their booking if more than 24 hours remain before check-in.",
+        responses={200: openapi.Response(description="Booking cancelled")}
+    )
     @action(detail=True, methods=['post'])
     @with_booking
     def cancel(self, request, booking):
+        """
+        Cancel a booking if allowed.
+
+        Args:
+            request: The HTTP request object.
+            booking (Booking): The booking instance to cancel.
+
+        Returns:
+            Response: Success or error message.
+        """
         try:
+            # Attempt to cancel the booking (checks 24h rule internally)
             booking.cancel()
         except ValidationError as e:
+            # Return 400 if cancellation is not allowed
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'detail': 'Booking successfully cancelled.'})
 
-    @swagger_docs['confirm']
+    @swagger_auto_schema(
+        operation_summary="Confirm Booking",
+        operation_description="LANDLORD or ADMIN confirms the booking. Status → CONFIRMED.",
+        responses={200: openapi.Response(description="Booking confirmed")}
+    )
     @action(detail=True, methods=['post'])
     @with_booking
     def confirm(self, request, booking):
+        """
+        Confirm a booking if its status is PENDING.
+
+        Args:
+            request: The HTTP request object.
+            booking (Booking): The booking instance to confirm.
+        Returns:
+            Response: Success or error message.
+        """
+        # Only allow confirmation if booking is still PENDING
         if booking.status != BookingStatusChoices.PENDING:
             return Response({'detail': 'This booking has already been processed.'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+        # Update status to CONFIRMED and save
         booking.status = BookingStatusChoices.CONFIRMED
         booking.save()
         return Response({'detail': 'Booking confirmed.'})
 
-    @swagger_docs['reject']
+    @swagger_auto_schema(
+        operation_summary="Reject Booking",
+        operation_description="LANDLORD or ADMIN rejects the booking. Status → REJECTED.",
+        responses={200: openapi.Response(description="Booking rejected")}
+    )
     @action(detail=True, methods=['post'])
     @with_booking
     def reject(self, request, booking):
+        """
+        Reject a booking if its status is PENDING.
+
+        Args:
+            request: The HTTP request object.
+            booking (Booking): The booking instance to reject.
+        Returns:
+            Response: Success or error message.
+        """
+        # Only allow rejection if booking is still PENDING
         if booking.status != BookingStatusChoices.PENDING:
             return Response({'detail': 'This booking has already been processed.'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+        # Update status to REJECTED and save
         booking.status = BookingStatusChoices.REJECTED
         booking.save()
         return Response({'detail': 'Booking rejected.'})
