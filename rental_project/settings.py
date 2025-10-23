@@ -169,3 +169,54 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'no-reply@example.com'
 
 SWAGGER_USE_COMPAT_RENDERERS = False
+
+
+# ------------------- logging --------------------------------------------------------
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} [{name}:{lineno}] {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'general_file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'general.log',
+            'formatter': 'verbose',
+            'level': 'INFO',
+        },
+        'critical_file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'dev_critical.log',
+            'formatter': 'verbose',
+            'level': 'ERROR',
+        },
+    },
+
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'general_file', 'critical_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'rental_project': {
+            'handlers': ['console', 'general_file', 'critical_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

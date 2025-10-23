@@ -52,6 +52,7 @@ rental_project/
 ├── README.md                  # 📘 Project overview, setup instructions, and usage documentation
 ├── swagger.yaml               # 📄 OpenAPI/Swagger specification for documenting the REST API
 ├── .gitignore                 # 🚫 Specifies files and folders to be ignored by Git version control
+├── logs/                      # 🚫 Directory for log files, excluded from Git version control
 
 # ── Core Django Configuration ──
 ├── rental_project/            # ⚙️ Main Django project configuration package
