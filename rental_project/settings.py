@@ -20,7 +20,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 SECRET_KEY = env("SECRET_KEY_DJANGO")
 DEBUG = env.bool("DEBUG", default=True)  # False для деплоя
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])  # прописать доменое имя без HTTPS
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])  # прописать доменное имя без HTTPS
 
 # Опциональный переключатель между базами данных
 USE_MYSQL = env.bool("MYSQL", default=False)
