@@ -40,7 +40,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.is_staff:
             return Review.objects.all()
-        if user.groups.filter(name__iexact='LANDLORD').exists():
+        if user.groups.filter(name__iexact="LANDLORD").exists():
             return Review.objects.filter(listing__landlord=user, is_approved=True)
         # TENANT
         return Review.objects.filter(tenant=user, is_approved=True)
@@ -55,11 +55,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
            - If none exists → raise ValidationError.
         3. Save review with tenant=user and is_approved=False.
         """
-        listing = serializer.validated_data['listing']
+        listing = serializer.validated_data["listing"]
         user = self.request.user
 
         # --- Prevent non-tenants from creating reviews ---
-        if user.is_staff or user.groups.filter(name__iexact='LANDLORD').exists():
+        if user.is_staff or user.groups.filter(name__iexact="LANDLORD").exists():
             raise ValidationError("Only a tenant can submit a review.")
 
         # --- Ensure tenant has completed a confirmed booking ---
@@ -67,11 +67,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
             listing=listing,
             tenant=user,
             status=BookingStatusChoices.CONFIRMED,
-            end_date__lt=timezone.now()
+            end_date__lt=timezone.now(),
         ).exists()
 
         if not has_completed_booking:
-            raise ValidationError("You can leave a review only after completing your stay.")
+            raise ValidationError(
+                "You can leave a review only after completing your stay."
+            )
 
         serializer.save(tenant=user, is_approved=False)
 
@@ -79,8 +81,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="List reviews",
         operation_description="Returns a list of reviews depending on the user's role: admin — all, "
-                              "tenant — their own approved, landlord — reviews for their listings",
-        responses={200: openapi.Response('Success', ReviewSerializer(many=True))}
+        "tenant — their own approved, landlord — reviews for their listings",
+        responses={200: openapi.Response("Success", ReviewSerializer(many=True))},
     )
     def list(self, request, *args, **kwargs):
         """Get a list of reviews respecting user role."""
@@ -90,7 +92,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         operation_summary="Create review",
         operation_description="Creates a review after a completed stay",
         request_body=ReviewSerializer,
-        responses={201: openapi.Response('Created', ReviewSerializer())}
+        responses={201: openapi.Response("Created", ReviewSerializer())},
     )
     def create(self, request, *args, **kwargs):
         """Create a new review (only after completing a booking)."""
@@ -98,7 +100,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         operation_summary="Retrieve review",
-        responses={200: openapi.Response('Success', ReviewSerializer())}
+        responses={200: openapi.Response("Success", ReviewSerializer())},
     )
     def retrieve(self, request, *args, **kwargs):
         """Retrieve a specific review by ID."""
@@ -107,7 +109,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Update review",
         request_body=ReviewSerializer,
-        responses={200: openapi.Response('Updated', ReviewSerializer())}
+        responses={200: openapi.Response("Updated", ReviewSerializer())},
     )
     def update(self, request, *args, **kwargs):
         """Fully update a review (author only)."""
@@ -116,7 +118,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Partially update review",
         request_body=ReviewSerializer,
-        responses={200: openapi.Response('Updated', ReviewSerializer())}
+        responses={200: openapi.Response("Updated", ReviewSerializer())},
     )
     def partial_update(self, request, *args, **kwargs):
         """Partially update a review (author only)."""
@@ -124,18 +126,18 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         operation_summary="Delete review",
-        responses={204: openapi.Response('No Content')}
+        responses={204: openapi.Response("No Content")},
     )
     def destroy(self, request, *args, **kwargs):
         """Delete a review (author only)."""
         return super().destroy(request, *args, **kwargs)
 
     # --- Custom action for approving reviews ---
-    @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
+    @action(detail=True, methods=["post"], permission_classes=[IsAdminUser])
     @swagger_auto_schema(
         operation_summary="Approve review",
         operation_description="Admin can approve a review to make it publicly visible.",
-        responses={200: openapi.Response('Review approved', ReviewSerializer())}
+        responses={200: openapi.Response("Review approved", ReviewSerializer())},
     )
     def approve(self, request, pk=None):
         """

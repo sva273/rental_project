@@ -1,8 +1,8 @@
 class BathroomTypeChoices:
-    SHOWER = 'shower'
-    BATHTUB = 'bathtub'
+    SHOWER = "shower"
+    BATHTUB = "bathtub"
 
     CHOICES = (
-        (SHOWER, 'Shower'),
-        (BATHTUB, 'Bathtub'),
+        (SHOWER, "Shower"),
+        (BATHTUB, "Bathtub"),
     )

@@ -5,7 +5,7 @@ from .models import Booking, BookingStatusChoices
 from .config import (
     notify_new_booking,
     notify_status_change,
-    notify_booking_dates_changed
+    notify_booking_dates_changed,
 )
 
 
@@ -45,14 +45,21 @@ def booking_created_or_updated(sender, instance, created, **kwargs):
         original_start = getattr(instance, "_original_start_date", None)
         original_end = getattr(instance, "_original_end_date", None)
         if original_start and original_end:
-            if original_start != instance.start_date or original_end != instance.end_date:
+            if (
+                original_start != instance.start_date
+                or original_end != instance.end_date
+            ):
                 notify_booking_dates_changed(instance, original_start, original_end)
 
         # Check status changes
         if instance.status == BookingStatusChoices.CONFIRMED:
-            notify_status_change(instance.listing.title, "confirmed", landlord_email, tenant_email)
+            notify_status_change(
+                instance.listing.title, "confirmed", landlord_email, tenant_email
+            )
         elif instance.status == BookingStatusChoices.REJECTED:
-            notify_status_change(instance.listing.title, "rejected", landlord_email, tenant_email)
+            notify_status_change(
+                instance.listing.title, "rejected", landlord_email, tenant_email
+            )
 
 
 @receiver(post_delete, sender=Booking)
@@ -62,4 +69,6 @@ def booking_deleted(sender, instance, **kwargs):
     """
     landlord_email = instance.listing.landlord.email
     tenant_email = instance.tenant.email
-    notify_status_change(instance.listing.title, "deleted", landlord_email, tenant_email)
+    notify_status_change(
+        instance.listing.title, "deleted", landlord_email, tenant_email
+    )

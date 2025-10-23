@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from .config import get_max_booking_end_date
 
+
 def validate_booking_dates(start_date, end_date, use_drf=False, instance=None):
     """
     Validate the start and end dates of a booking.

@@ -19,19 +19,19 @@ from web.views import index
 
 # Router
 router = DefaultRouter()
-router.register(r'listings', ListingViewSet, basename='listing')
-router.register(r'bookings', BookingViewSet, basename='booking')
-router.register(r'reviews', ReviewViewSet, basename='review')
-router.register(r'view-history', ViewHistoryViewSet, basename='view-history')
-router.register(r'search-history', SearchHistoryViewSet, basename='search-history')
-router.register(r'auth', AuthViewSet, basename='auth')
-router.register(r'profile', ProfileViewSet, basename='profile')
+router.register(r"listings", ListingViewSet, basename="listing")
+router.register(r"bookings", BookingViewSet, basename="booking")
+router.register(r"reviews", ReviewViewSet, basename="review")
+router.register(r"view-history", ViewHistoryViewSet, basename="view-history")
+router.register(r"search-history", SearchHistoryViewSet, basename="search-history")
+router.register(r"auth", AuthViewSet, basename="auth")
+router.register(r"profile", ProfileViewSet, basename="profile")
 
 # Swagger с TokenAuthentication
 schema_view = get_schema_view(
     openapi.Info(
         title="Rental API",
-        default_version='v1',
+        default_version="v1",
         description="API для управления сервисом аренды",
         contact=openapi.Contact(email="youremail@example.com"),
         license=openapi.License(name="MIT License"),
@@ -43,17 +43,26 @@ schema_view = get_schema_view(
 
 # Основные маршруты
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', index, name='index'),
-    path('api/v1/', include(router.urls)),
-
+    path("admin/", admin.site.urls),
+    path("", index, name="index"),
+    path("api/v1/", include(router.urls)),
     # Swagger / Redoc
-    path('api/docs/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api/docs/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-
+    path(
+        "api/docs/swagger/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
+    path(
+        "api/docs/redoc/",
+        schema_view.with_ui("redoc", cache_timeout=0),
+        name="schema-redoc",
+    ),
     # Raw JSON/YAML
-    re_path(r'^api/docs/swagger(?P<format>\.json|\.yaml)$',
-            schema_view.without_ui(cache_timeout=0), name='schema-json-yaml'),
+    re_path(
+        r"^api/docs/swagger(?P<format>\.json|\.yaml)$",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json-yaml",
+    ),
 ]
 
 if settings.DEBUG:

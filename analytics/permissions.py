@@ -7,6 +7,7 @@ class IsOwnerOrAdmin(BasePermission):
     - The owner of the object (obj.user == request.user)
     - Administrators (user.is_staff)
     """
+
     def has_permission(self, request, view):
         # Only authenticated users are allowed to proceed
         return request.user and request.user.is_authenticated

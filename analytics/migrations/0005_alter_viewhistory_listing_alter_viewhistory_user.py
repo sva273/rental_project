@@ -8,20 +8,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('analytics', '0004_alter_searchhistory_user'),
-        ('listings', '0005_alter_listing_parking_price_per_day_and_more'),
+        ("analytics", "0004_alter_searchhistory_user"),
+        ("listings", "0005_alter_listing_parking_price_per_day_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='viewhistory',
-            name='listing',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='views', to='listings.listing'),
+            model_name="viewhistory",
+            name="listing",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="views",
+                to="listings.listing",
+            ),
         ),
         migrations.AlterField(
-            model_name='viewhistory',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='view_history', to=settings.AUTH_USER_MODEL),
+            model_name="viewhistory",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="view_history",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

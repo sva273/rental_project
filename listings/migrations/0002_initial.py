@@ -10,26 +10,34 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('listings', '0001_initial'),
+        ("listings", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='listing',
-            name='landlord',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='listings', to=settings.AUTH_USER_MODEL),
+            model_name="listing",
+            name="landlord",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="listings",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddIndex(
-            model_name='listing',
-            index=models.Index(fields=['price_per_day'], name='listings_price_p_30e02a_idx'),
+            model_name="listing",
+            index=models.Index(
+                fields=["price_per_day"], name="listings_price_p_30e02a_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='listing',
-            index=models.Index(fields=['city'], name='listings_city_67a231_idx'),
+            model_name="listing",
+            index=models.Index(fields=["city"], name="listings_city_67a231_idx"),
         ),
         migrations.AddIndex(
-            model_name='listing',
-            index=models.Index(fields=['is_active'], name='listings_is_acti_fd46bf_idx'),
+            model_name="listing",
+            index=models.Index(
+                fields=["is_active"], name="listings_is_acti_fd46bf_idx"
+            ),
         ),
     ]

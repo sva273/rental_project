@@ -1,8 +1,8 @@
 class RoleChoices:
-    TENANT = 'tenant'
-    LANDLORD = 'landlord'
+    TENANT = "tenant"
+    LANDLORD = "landlord"
 
     CHOICES = (
-        (TENANT, 'Tenant'),
-        (LANDLORD, 'Landlord'),
+        (TENANT, "Tenant"),
+        (LANDLORD, "Landlord"),
     )

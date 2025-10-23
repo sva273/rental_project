@@ -8,7 +8,7 @@ from django.core.files import File
 from io import BytesIO
 
 # Инициализация Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rental_project.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rental_project.settings")
 django.setup()
 
 from django.contrib.auth import get_user_model
@@ -16,18 +16,24 @@ from listings.models import Listing
 from listings.choices.property_type import PropertyTypeChoices
 from listings.choices.bathroom_type import BathroomTypeChoices
 
-fake = Faker('en_US')
+fake = Faker("en_US")
 User = get_user_model()
 
 NUM_LISTINGS = 80  # количество объявлений
-NUM_IMAGES = 50    # сколько фото загрузить с picsum.photos
-MEDIA_PATH = os.path.join('media', 'listing_images')
+NUM_IMAGES = 50  # сколько фото загрузить с picsum.photos
+MEDIA_PATH = os.path.join("media", "listing_images")
 
 
 def download_images(num_images=NUM_IMAGES):
     """Скачивает случайные фото с picsum.photos и сохраняет в media/listing_images/"""
     os.makedirs(MEDIA_PATH, exist_ok=True)
-    existing = len([f for f in os.listdir(MEDIA_PATH) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
+    existing = len(
+        [
+            f
+            for f in os.listdir(MEDIA_PATH)
+            if f.lower().endswith((".jpg", ".jpeg", ".png"))
+        ]
+    )
 
     if existing >= num_images:
         print(f"Уже есть {existing} изображений, скачивание не требуется.")
@@ -45,7 +51,7 @@ def download_images(num_images=NUM_IMAGES):
         url = f"https://picsum.photos/800/600"
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
-            with open(img_path, 'wb') as f:
+            with open(img_path, "wb") as f:
                 f.write(response.content)
             print(f" Saved: {img_name}")
         else:
@@ -56,16 +62,18 @@ def download_images(num_images=NUM_IMAGES):
 
 def get_local_images():
     """Возвращает список путей к локальным изображениям в media/listing_images/"""
-    images = sorted([
-        os.path.join(MEDIA_PATH, f)
-        for f in os.listdir(MEDIA_PATH)
-        if f.lower().endswith(('.jpg', '.jpeg', '.png'))
-    ])
+    images = sorted(
+        [
+            os.path.join(MEDIA_PATH, f)
+            for f in os.listdir(MEDIA_PATH)
+            if f.lower().endswith((".jpg", ".jpeg", ".png"))
+        ]
+    )
     return images
 
 
 def create_fake_listings(num=NUM_LISTINGS):
-    landlords = User.objects.filter(role='landlord')
+    landlords = User.objects.filter(role="landlord")
     if not landlords.exists():
         print(" Нет арендодателей! Сначала создай пользователей через fake_users.py")
         return
@@ -90,8 +98,12 @@ def create_fake_listings(num=NUM_LISTINGS):
         latitude = round(random.uniform(45.0, 55.0), 6)
         longitude = round(random.uniform(10.0, 30.0), 6)
 
-        property_type = random.choice([choice[0] for choice in PropertyTypeChoices.CHOICES])
-        bathroom_type = random.choice([choice[0] for choice in BathroomTypeChoices.CHOICES])
+        property_type = random.choice(
+            [choice[0] for choice in PropertyTypeChoices.CHOICES]
+        )
+        bathroom_type = random.choice(
+            [choice[0] for choice in BathroomTypeChoices.CHOICES]
+        )
 
         rooms = random.randint(1, 5)
         floor = random.randint(1, 15)
@@ -102,10 +114,11 @@ def create_fake_listings(num=NUM_LISTINGS):
         has_parking = random.choice([True, False])
 
         daily_enabled = True
-        price_per_day = Decimal(random.uniform(30, 200)).quantize(Decimal('0.01'))
+        price_per_day = Decimal(random.uniform(30, 200)).quantize(Decimal("0.01"))
         parking_price_per_day = (
-            Decimal(random.uniform(5, 20)).quantize(Decimal('0.01'))
-            if has_parking else None
+            Decimal(random.uniform(5, 20)).quantize(Decimal("0.01"))
+            if has_parking
+            else None
         )
 
         listing = Listing.objects.create(
@@ -137,7 +150,7 @@ def create_fake_listings(num=NUM_LISTINGS):
         # Назначаем изображение по порядку
         image_index = i % len(images)
         image_path = images[image_index]
-        with open(image_path, 'rb') as img_file:
+        with open(image_path, "rb") as img_file:
             file_name = os.path.basename(image_path)
             listing.main_image.save(file_name, File(img_file), save=True)
 

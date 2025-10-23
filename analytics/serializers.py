@@ -13,12 +13,13 @@ class SearchHistorySerializer(serializers.ModelSerializer):
         keyword (CharField): The search query string.
         searched_at (DateTimeField): Timestamp when the search was performed (read-only).
     """
-    user_email = serializers.ReadOnlyField(source='user.email')
+
+    user_email = serializers.ReadOnlyField(source="user.email")
 
     class Meta:
         model = SearchHistory
-        fields = ['id', 'user', 'user_email', 'keyword', 'searched_at']
-        read_only_fields = ['user', 'searched_at']
+        fields = ["id", "user", "user_email", "keyword", "searched_at"]
+        read_only_fields = ["user", "searched_at"]
 
 
 class ViewHistorySerializer(serializers.ModelSerializer):
@@ -33,10 +34,11 @@ class ViewHistorySerializer(serializers.ModelSerializer):
         listing (PrimaryKeyRelatedField): The listing that was viewed.
         viewed_at (DateTimeField): Timestamp when the listing was viewed (read-only).
     """
-    user_email = serializers.ReadOnlyField(source='user.email')
-    listing_title = serializers.ReadOnlyField(source='listing.title')
+
+    user_email = serializers.ReadOnlyField(source="user.email")
+    listing_title = serializers.ReadOnlyField(source="listing.title")
 
     class Meta:
         model = ViewHistory
-        fields = ['id', 'user', 'user_email', 'listing', 'listing_title', 'viewed_at']
-        read_only_fields = ['user', 'viewed_at']
+        fields = ["id", "user", "user_email", "listing", "listing_title", "viewed_at"]
+        read_only_fields = ["user", "viewed_at"]

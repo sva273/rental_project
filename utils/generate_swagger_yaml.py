@@ -13,7 +13,7 @@ import yaml
 generator = OpenAPISchemaGenerator(
     info=openapi.Info(
         title="Rental API",
-        default_version='v1',
+        default_version="v1",
         description="API для управления сервисом аренды",
         contact=openapi.Contact(email="youremail@example.com"),
     )

@@ -8,14 +8,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('analytics', '0003_alter_searchhistory_options_and_more'),
+        ("analytics", "0003_alter_searchhistory_options_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='searchhistory',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='search_history', to=settings.AUTH_USER_MODEL),
+            model_name="searchhistory",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="search_history",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

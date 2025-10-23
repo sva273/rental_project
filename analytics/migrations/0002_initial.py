@@ -10,25 +10,37 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('analytics', '0001_initial'),
-        ('listings', '0001_initial'),
+        ("analytics", "0001_initial"),
+        ("listings", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='searchhistory',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='search_history', to=settings.AUTH_USER_MODEL),
+            model_name="searchhistory",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="search_history",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='viewhistory',
-            name='listing',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='views', to='listings.listing'),
+            model_name="viewhistory",
+            name="listing",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="views",
+                to="listings.listing",
+            ),
         ),
         migrations.AddField(
-            model_name='viewhistory',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='view_history', to=settings.AUTH_USER_MODEL),
+            model_name="viewhistory",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="view_history",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

@@ -1,10 +1,10 @@
 class PropertyTypeChoices:
-    APARTMENT = 'apartment'
-    HOUSE = 'house'
-    STUDIO = 'studio'
+    APARTMENT = "apartment"
+    HOUSE = "house"
+    STUDIO = "studio"
 
     CHOICES = (
-        (APARTMENT, 'Apartment'),
-        (HOUSE, 'House'),
-        (STUDIO, 'Studio'),
+        (APARTMENT, "Apartment"),
+        (HOUSE, "House"),
+        (STUDIO, "Studio"),
     )

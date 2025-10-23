@@ -20,13 +20,14 @@ class PopularKeywordSerializer(serializers.Serializer):
     """
     Serializer for returning popular search keywords with their counts.
     """
+
     keyword = serializers.CharField()
     count = serializers.IntegerField()
 
 
-class ViewHistoryViewSet(mixins.ListModelMixin,
-                         mixins.CreateModelMixin,
-                         viewsets.GenericViewSet):
+class ViewHistoryViewSet(
+    mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
+):
     """
     ViewHistoryViewSet manages user's listing view history.
 
@@ -36,11 +37,12 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         - Provides popular listings by view count.
         - Trims history to a maximum of MAX_HISTORY records per user.
     """
+
     serializer_class = ViewHistorySerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
-    ordering_fields = ['viewed_at']
-    search_fields = ['listing__title', 'listing__city']
+    ordering_fields = ["viewed_at"]
+    search_fields = ["listing__title", "listing__city"]
     queryset = ViewHistory.objects.all()
 
     def get_queryset(self):
@@ -57,7 +59,7 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         """
         Records a new view when a ViewHistory object is created.
         """
-        listing = serializer.validated_data['listing']
+        listing = serializer.validated_data["listing"]
         self.record_view(self.request.user, listing)
 
     @staticmethod
@@ -69,41 +71,58 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         - Deletes oldest records if the user's history exceeds MAX_HISTORY.
         """
         # Get the most recent view for the user
-        last = ViewHistory.objects.filter(user=user).order_by('-viewed_at').first()
+        last = ViewHistory.objects.filter(user=user).order_by("-viewed_at").first()
 
         # Only create a new record if the last viewed listing is different or none exists
         if not last or last.listing != listing:
             ViewHistory.objects.create(user=user, listing=listing)
 
             # Increment the listing's view count
-            listing.views_count = F('views_count') + 1
-            listing.save(update_fields=['views_count'])
+            listing.views_count = F("views_count") + 1
+            listing.save(update_fields=["views_count"])
 
             # Trim the oldest records if history exceeds MAX_HISTORY
             excess = ViewHistory.objects.filter(user=user).count() - MAX_HISTORY
             if excess > 0:
-                ViewHistory.objects.filter(user=user).order_by('viewed_at')[:excess].delete()
+                ViewHistory.objects.filter(user=user).order_by("viewed_at")[
+                    :excess
+                ].delete()
 
     @swagger_auto_schema(
         operation_summary="List of listing views",
         operation_description="Returns all viewed listings of the current user, optionally filtered by date.",
         manual_parameters=[
-            openapi.Parameter('from_date', openapi.IN_QUERY,
-                              description="Filter: show only views after this date (YYYY-MM-DD)",
-                              type=openapi.TYPE_STRING),
-            openapi.Parameter('ordering', openapi.IN_QUERY,
-                              description="Order by viewed_at", type=openapi.TYPE_STRING),
-            openapi.Parameter('search', openapi.IN_QUERY,
-                              description="Search by listing title or city", type=openapi.TYPE_STRING),
+            openapi.Parameter(
+                "from_date",
+                openapi.IN_QUERY,
+                description="Filter: show only views after this date (YYYY-MM-DD)",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "ordering",
+                openapi.IN_QUERY,
+                description="Order by viewed_at",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "search",
+                openapi.IN_QUERY,
+                description="Search by listing title or city",
+                type=openapi.TYPE_STRING,
+            ),
         ],
-        responses={200: openapi.Response(description="OK", schema=ViewHistorySerializer(many=True))}
+        responses={
+            200: openapi.Response(
+                description="OK", schema=ViewHistorySerializer(many=True)
+            )
+        },
     )
     def list(self, request, *args, **kwargs):
         """
         Lists the current user's view history, optionally filtered by `from_date`.
         """
         queryset = self.get_queryset()
-        from_date = request.query_params.get('from_date')
+        from_date = request.query_params.get("from_date")
 
         # Filter views if a 'from_date' query param is provided
         if from_date:
@@ -116,7 +135,9 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
         operation_summary="Add listing view",
         operation_description="Adds a new view history entry for the current user.",
         request_body=ViewHistorySerializer,
-        responses={201: openapi.Response(description="Created", schema=ViewHistorySerializer())}
+        responses={
+            201: openapi.Response(description="Created", schema=ViewHistorySerializer())
+        },
     )
     def create(self, request, *args, **kwargs):
         """
@@ -127,21 +148,25 @@ class ViewHistoryViewSet(mixins.ListModelMixin,
     @swagger_auto_schema(
         operation_summary="Popular listings",
         operation_description="Returns a list of listings sorted by view count.",
-        responses={200: openapi.Response(description="OK", schema=ListingSerializer(many=True))}
+        responses={
+            200: openapi.Response(description="OK", schema=ListingSerializer(many=True))
+        },
     )
-    @action(detail=False, methods=['get'], url_path='popular')
+    @action(detail=False, methods=["get"], url_path="popular")
     def popular_listings(self, request):
         """
         Returns the top 50 popular listings based on view counts.
         """
-        listings = Listing.objects.filter(is_deleted=False).order_by('-views_count')[:50]
+        listings = Listing.objects.filter(is_deleted=False).order_by("-views_count")[
+            :50
+        ]
         serializer = ListingSerializer(listings, many=True)
         return Response(serializer.data)
 
 
-class SearchHistoryViewSet(mixins.ListModelMixin,
-                           mixins.CreateModelMixin,
-                           viewsets.GenericViewSet):
+class SearchHistoryViewSet(
+    mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
+):
     """
     SearchHistoryViewSet manages user's search keyword history.
 
@@ -151,11 +176,12 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
         - Provides popular search keywords across all users.
         - Trims history to MAX_HISTORY per user.
     """
+
     serializer_class = SearchHistorySerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
-    ordering_fields = ['searched_at']
-    search_fields = ['keyword']
+    ordering_fields = ["searched_at"]
+    search_fields = ["keyword"]
     queryset = SearchHistory.objects.all()
 
     def get_queryset(self):
@@ -172,40 +198,64 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
         Adds a new search keyword for the user, avoiding duplicates in a row
         and trimming history beyond MAX_HISTORY.
         """
-        keyword = serializer.validated_data['keyword']
+        keyword = serializer.validated_data["keyword"]
 
         # Get the last keyword searched by this user
-        last = SearchHistory.objects.filter(user=self.request.user).order_by('-searched_at').first()
+        last = (
+            SearchHistory.objects.filter(user=self.request.user)
+            .order_by("-searched_at")
+            .first()
+        )
 
         # Only create a new record if it differs from the last one
         if not last or last.keyword != keyword:
             serializer.save(user=self.request.user)
 
             # Trim oldest entries if the count exceeds MAX_HISTORY
-            excess = SearchHistory.objects.filter(user=self.request.user).count() - MAX_HISTORY
+            excess = (
+                SearchHistory.objects.filter(user=self.request.user).count()
+                - MAX_HISTORY
+            )
             if excess > 0:
-                SearchHistory.objects.filter(user=self.request.user).order_by('searched_at')[:excess].delete()
+                SearchHistory.objects.filter(user=self.request.user).order_by(
+                    "searched_at"
+                )[:excess].delete()
 
     @swagger_auto_schema(
         operation_summary="List of search queries",
         operation_description="Returns all search queries of the current user, optionally filtered by date.",
         manual_parameters=[
-            openapi.Parameter('from_date', openapi.IN_QUERY,
-                              description="Filter: show only searches after this date (YYYY-MM-DD)",
-                              type=openapi.TYPE_STRING),
-            openapi.Parameter('ordering', openapi.IN_QUERY,
-                              description="Order by searched_at", type=openapi.TYPE_STRING),
-            openapi.Parameter('search', openapi.IN_QUERY,
-                              description="Search by keyword", type=openapi.TYPE_STRING),
+            openapi.Parameter(
+                "from_date",
+                openapi.IN_QUERY,
+                description="Filter: show only searches after this date (YYYY-MM-DD)",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "ordering",
+                openapi.IN_QUERY,
+                description="Order by searched_at",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "search",
+                openapi.IN_QUERY,
+                description="Search by keyword",
+                type=openapi.TYPE_STRING,
+            ),
         ],
-        responses={200: openapi.Response(description="OK", schema=SearchHistorySerializer(many=True))}
+        responses={
+            200: openapi.Response(
+                description="OK", schema=SearchHistorySerializer(many=True)
+            )
+        },
     )
     def list(self, request, *args, **kwargs):
         """
         Lists the current user's search history, optionally filtered by `from_date`.
         """
         queryset = self.get_queryset()
-        from_date = request.query_params.get('from_date')
+        from_date = request.query_params.get("from_date")
 
         # Filter searches if a 'from_date' query param is provided
         if from_date:
@@ -218,7 +268,11 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
         operation_summary="Add search query",
         operation_description="Adds a new search keyword to the user's history.",
         request_body=SearchHistorySerializer,
-        responses={201: openapi.Response(description="Created", schema=SearchHistorySerializer())}
+        responses={
+            201: openapi.Response(
+                description="Created", schema=SearchHistorySerializer()
+            )
+        },
     )
     def create(self, request, *args, **kwargs):
         """
@@ -229,17 +283,20 @@ class SearchHistoryViewSet(mixins.ListModelMixin,
     @swagger_auto_schema(
         operation_summary="Popular search keywords",
         operation_description="Returns a list of the most frequent search keywords across all users.",
-        responses={200: openapi.Response(description="OK", schema=PopularKeywordSerializer(many=True))}
+        responses={
+            200: openapi.Response(
+                description="OK", schema=PopularKeywordSerializer(many=True)
+            )
+        },
     )
-    @action(detail=False, methods=['get'], url_path='popular')
+    @action(detail=False, methods=["get"], url_path="popular")
     def popular_keywords(self, request):
         """
         Returns the top 50 most frequent search keywords across all users.
         """
         keywords = (
-            SearchHistory.objects
-            .values('keyword')
-            .annotate(count=Count('id'))
-            .order_by('-count')[:50]
+            SearchHistory.objects.values("keyword")
+            .annotate(count=Count("id"))
+            .order_by("-count")[:50]
         )
         return Response(keywords)

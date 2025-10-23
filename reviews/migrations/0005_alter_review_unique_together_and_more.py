@@ -7,18 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('listings', '0005_alter_listing_parking_price_per_day_and_more'),
-        ('reviews', '0004_alter_review_listing_alter_review_tenant'),
+        ("listings", "0005_alter_listing_parking_price_per_day_and_more"),
+        ("reviews", "0004_alter_review_listing_alter_review_tenant"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='review',
+            name="review",
             unique_together=set(),
         ),
         migrations.AddConstraint(
-            model_name='review',
-            constraint=models.UniqueConstraint(fields=('listing', 'tenant'), name='unique_review_per_listing_tenant'),
+            model_name="review",
+            constraint=models.UniqueConstraint(
+                fields=("listing", "tenant"), name="unique_review_per_listing_tenant"
+            ),
         ),
     ]

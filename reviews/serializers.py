@@ -17,20 +17,20 @@ class ReviewSerializer(serializers.ModelSerializer):
     - read_only_fields: tenant and created_at (cannot be modified by client)
     """
 
-    tenant_email = serializers.ReadOnlyField(source='tenant.email')
+    tenant_email = serializers.ReadOnlyField(source="tenant.email")
 
     class Meta:
         model = Review
         fields = [
-            'id',
-            'listing',
-            'tenant',
-            'tenant_email',
-            'rating',
-            'comment',
-            'created_at'
+            "id",
+            "listing",
+            "tenant",
+            "tenant_email",
+            "rating",
+            "comment",
+            "created_at",
         ]
-        read_only_fields = ['tenant', 'created_at']
+        read_only_fields = ["tenant", "created_at"]
 
     def validate_rating(self, value):
         """
@@ -52,6 +52,5 @@ class ReviewSerializer(serializers.ModelSerializer):
         - Sets `tenant` to the current authenticated user from the request context.
         - Calls the parent create() method to save the instance.
         """
-        validated_data['tenant'] = self.context['request'].user
+        validated_data["tenant"] = self.context["request"].user
         return super().create(validated_data)
-

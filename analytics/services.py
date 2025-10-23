@@ -24,7 +24,7 @@ def record_listing_view(user, listing: Listing):
         - Maintains a fixed-size history (MAX_HISTORY) per user.
     """
     # Retrieve the most recent view by this user
-    last = ViewHistory.objects.filter(user=user).order_by('-viewed_at').first()
+    last = ViewHistory.objects.filter(user=user).order_by("-viewed_at").first()
 
     # If no previous view exists or the last viewed listing is different from the current listing
     if not last or last.listing != listing:
@@ -32,12 +32,14 @@ def record_listing_view(user, listing: Listing):
         ViewHistory.objects.create(user=user, listing=listing)
 
         # Increment the listing's views_count atomically
-        listing.views_count = F('views_count') + 1
-        listing.save(update_fields=['views_count'])
+        listing.views_count = F("views_count") + 1
+        listing.save(update_fields=["views_count"])
 
         # Calculate how many old entries exceed the MAX_HISTORY limit
         excess = ViewHistory.objects.filter(user=user).count() - MAX_HISTORY
 
         # Delete the oldest entries to maintain the history size limit
         if excess > 0:
-            ViewHistory.objects.filter(user=user).order_by('viewed_at')[:excess].delete()
+            ViewHistory.objects.filter(user=user).order_by("viewed_at")[
+                :excess
+            ].delete()

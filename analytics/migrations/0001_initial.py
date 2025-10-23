@@ -7,29 +7,44 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='SearchHistory',
+            name="SearchHistory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('keyword', models.CharField(max_length=255)),
-                ('searched_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("keyword", models.CharField(max_length=255)),
+                ("searched_at", models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'ordering': ['-searched_at'],
+                "ordering": ["-searched_at"],
             },
         ),
         migrations.CreateModel(
-            name='ViewHistory',
+            name="ViewHistory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('viewed_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("viewed_at", models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'ordering': ['-viewed_at'],
+                "ordering": ["-viewed_at"],
             },
         ),
     ]

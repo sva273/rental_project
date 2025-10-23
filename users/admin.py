@@ -37,48 +37,69 @@ class UserAdmin(BaseUserAdmin):
     """
 
     list_display = (
-        'id',
-        'email',
-        'first_name',
-        'last_name',
-        'role',
-        'is_active',
-        'is_staff',
-        'is_superuser',
-        'date_joined',
+        "id",
+        "email",
+        "first_name",
+        "last_name",
+        "role",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "date_joined",
     )
 
-    list_filter = ('role', 'is_active', 'is_staff', 'is_superuser', 'date_joined')
-    search_fields = ('email', 'first_name', 'last_name')
-    ordering = ('-date_joined',)
+    list_filter = ("role", "is_active", "is_staff", "is_superuser", "date_joined")
+    search_fields = ("email", "first_name", "last_name")
+    ordering = ("-date_joined",)
     list_per_page = 25
 
     fieldsets = (
-        ('Main Information', {
-            'fields': ('email', 'password', 'first_name', 'last_name', 'role')
-        }),
-        ('Permissions', {
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')
-        }),
-        ('Dates', {
-            'fields': ('last_login', 'date_joined')
-        }),
+        (
+            "Main Information",
+            {"fields": ("email", "password", "first_name", "last_name", "role")},
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
+        ("Dates", {"fields": ("last_login", "date_joined")}),
     )
 
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': (
-                'email', 'password1', 'password2',
-                'first_name', 'last_name', 'role',
-                'is_active', 'is_staff'
-            ),
-        }),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "email",
+                    "password1",
+                    "password2",
+                    "first_name",
+                    "last_name",
+                    "role",
+                    "is_active",
+                    "is_staff",
+                ),
+            },
+        ),
     )
 
-    readonly_fields = ('date_joined', 'last_login')
+    readonly_fields = ("date_joined", "last_login")
 
-    actions = ['activate_users', 'deactivate_users', 'set_role_to_tenant', 'set_role_to_landlord']
+    actions = [
+        "activate_users",
+        "deactivate_users",
+        "set_role_to_tenant",
+        "set_role_to_landlord",
+    ]
 
     @admin.action(description="Activate selected users")
     def activate_users(self, request, queryset):
@@ -103,13 +124,17 @@ class UserAdmin(BaseUserAdmin):
         """
         Bulk action to set role of selected users to 'tenant'.
         """
-        updated = queryset.update(role='tenant')
-        self.message_user(request, f"{updated} users set to role 'tenant'.", messages.INFO)
+        updated = queryset.update(role="tenant")
+        self.message_user(
+            request, f"{updated} users set to role 'tenant'.", messages.INFO
+        )
 
     @admin.action(description="Set role to 'landlord'")
     def set_role_to_landlord(self, request, queryset):
         """
         Bulk action to set role of selected users to 'landlord'.
         """
-        updated = queryset.update(role='landlord')
-        self.message_user(request, f"{updated} users set to role 'landlord'.", messages.INFO)
+        updated = queryset.update(role="landlord")
+        self.message_user(
+            request, f"{updated} users set to role 'landlord'.", messages.INFO
+        )

@@ -7,22 +7,30 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('analytics', '0002_initial'),
-        ('listings', '0003_listing_views_count'),
+        ("analytics", "0002_initial"),
+        ("listings", "0003_listing_views_count"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='searchhistory',
-            options={'ordering': ['-searched_at'], 'verbose_name': 'Search History', 'verbose_name_plural': 'Search Histories'},
+            name="searchhistory",
+            options={
+                "ordering": ["-searched_at"],
+                "verbose_name": "Search History",
+                "verbose_name_plural": "Search Histories",
+            },
         ),
         migrations.AlterModelOptions(
-            name='viewhistory',
-            options={'ordering': ['-viewed_at'], 'verbose_name': 'View History', 'verbose_name_plural': 'View Histories'},
+            name="viewhistory",
+            options={
+                "ordering": ["-viewed_at"],
+                "verbose_name": "View History",
+                "verbose_name_plural": "View Histories",
+            },
         ),
         migrations.AlterUniqueTogether(
-            name='viewhistory',
-            unique_together={('user', 'listing', 'viewed_at')},
+            name="viewhistory",
+            unique_together={("user", "listing", "viewed_at")},
         ),
     ]

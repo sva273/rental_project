@@ -5,6 +5,7 @@ from listings.models import Listing
 
 # Create your models here.
 
+
 class Review(models.Model):
     """
     Model representing a review left by a tenant for a listing.
@@ -23,29 +24,24 @@ class Review(models.Model):
     """
 
     listing = models.ForeignKey(
-        Listing,
-        on_delete=models.PROTECT,
-        related_name='reviews'
+        Listing, on_delete=models.PROTECT, related_name="reviews"
     )
     tenant = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        related_name='reviews'
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="reviews"
     )
     rating = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)],
-        help_text="Rating score between 1 and 5"
+        help_text="Rating score between 1 and 5",
     )
     comment = models.TextField(help_text="Content of the review")
     created_at = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False, help_text="Admin approval status")
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
         constraints = [
             models.UniqueConstraint(
-                fields=['listing', 'tenant'],
-                name='unique_review_per_listing_tenant'
+                fields=["listing", "tenant"], name="unique_review_per_listing_tenant"
             )
         ]
 
@@ -55,4 +51,3 @@ class Review(models.Model):
         Example: "Review 12 by tenant@example.com"
         """
         return f"Review {self.id} by {self.tenant.email}"
-

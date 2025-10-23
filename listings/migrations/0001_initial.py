@@ -7,45 +7,103 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Listing',
+            name="Listing",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('description', models.TextField()),
-                ('country', models.CharField(max_length=100)),
-                ('city', models.CharField(db_index=True, max_length=100)),
-                ('street', models.CharField(max_length=100)),
-                ('house_number', models.CharField(max_length=10)),
-                ('latitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True)),
-                ('longitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True)),
-                ('property_type', models.CharField(choices=[('apartment', 'Apartment'), ('house', 'House'), ('studio', 'Studio')], default='apartment', max_length=50)),
-                ('rooms', models.PositiveIntegerField(blank=True, null=True)),
-                ('floor', models.PositiveIntegerField(blank=True, null=True)),
-                ('has_elevator', models.BooleanField(default=False)),
-                ('has_terrace', models.BooleanField(default=False)),
-                ('has_balcony', models.BooleanField(default=False)),
-                ('bathroom_type', models.CharField(choices=[('shower', 'Shower'), ('bathtub', 'Bathtub')], default='shower', max_length=20)),
-                ('has_internet', models.BooleanField(default=False)),
-                ('has_parking', models.BooleanField(default=False)),
-                ('daily_enabled', models.BooleanField(default=True)),
-                ('price_per_day', models.DecimalField(blank=True, decimal_places=2, help_text='Цена за сутки (минимум 1 день)', max_digits=10, null=True)),
-                ('parking_price_per_day', models.DecimalField(blank=True, decimal_places=2, help_text='Цена за парковку в сутки (если платная)', max_digits=10, null=True)),
-                ('is_active', models.BooleanField(db_index=True, default=True)),
-                ('is_deleted', models.BooleanField(default=False)),
-                ('main_image', models.ImageField(blank=True, null=True, upload_to='listing_images/')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("description", models.TextField()),
+                ("country", models.CharField(max_length=100)),
+                ("city", models.CharField(db_index=True, max_length=100)),
+                ("street", models.CharField(max_length=100)),
+                ("house_number", models.CharField(max_length=10)),
+                (
+                    "latitude",
+                    models.DecimalField(
+                        blank=True, decimal_places=6, max_digits=9, null=True
+                    ),
+                ),
+                (
+                    "longitude",
+                    models.DecimalField(
+                        blank=True, decimal_places=6, max_digits=9, null=True
+                    ),
+                ),
+                (
+                    "property_type",
+                    models.CharField(
+                        choices=[
+                            ("apartment", "Apartment"),
+                            ("house", "House"),
+                            ("studio", "Studio"),
+                        ],
+                        default="apartment",
+                        max_length=50,
+                    ),
+                ),
+                ("rooms", models.PositiveIntegerField(blank=True, null=True)),
+                ("floor", models.PositiveIntegerField(blank=True, null=True)),
+                ("has_elevator", models.BooleanField(default=False)),
+                ("has_terrace", models.BooleanField(default=False)),
+                ("has_balcony", models.BooleanField(default=False)),
+                (
+                    "bathroom_type",
+                    models.CharField(
+                        choices=[("shower", "Shower"), ("bathtub", "Bathtub")],
+                        default="shower",
+                        max_length=20,
+                    ),
+                ),
+                ("has_internet", models.BooleanField(default=False)),
+                ("has_parking", models.BooleanField(default=False)),
+                ("daily_enabled", models.BooleanField(default=True)),
+                (
+                    "price_per_day",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        help_text="Цена за сутки (минимум 1 день)",
+                        max_digits=10,
+                        null=True,
+                    ),
+                ),
+                (
+                    "parking_price_per_day",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        help_text="Цена за парковку в сутки (если платная)",
+                        max_digits=10,
+                        null=True,
+                    ),
+                ),
+                ("is_active", models.BooleanField(db_index=True, default=True)),
+                ("is_deleted", models.BooleanField(default=False)),
+                (
+                    "main_image",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="listing_images/"
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'verbose_name': 'Listing',
-                'verbose_name_plural': 'Listings',
-                'db_table': 'listings',
-                'ordering': ['-created_at'],
+                "verbose_name": "Listing",
+                "verbose_name_plural": "Listings",
+                "db_table": "listings",
+                "ordering": ["-created_at"],
             },
         ),
     ]

@@ -7,28 +7,56 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Booking',
+            name="Booking",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_date', models.DateField()),
-                ('end_date', models.DateField()),
-                ('parking_included', models.BooleanField(default=False)),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled'), ('rejected', 'Rejected')], default='pending', max_length=20)),
-                ('total_price', models.DecimalField(blank=True, decimal_places=2, help_text='Общая сумма бронирования (включая парковку, если есть)', max_digits=12, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('is_deleted', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("start_date", models.DateField()),
+                ("end_date", models.DateField()),
+                ("parking_included", models.BooleanField(default=False)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending"),
+                            ("confirmed", "Confirmed"),
+                            ("cancelled", "Cancelled"),
+                            ("rejected", "Rejected"),
+                        ],
+                        default="pending",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "total_price",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        help_text="Общая сумма бронирования (включая парковку, если есть)",
+                        max_digits=12,
+                        null=True,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("is_deleted", models.BooleanField(default=False)),
             ],
             options={
-                'verbose_name': 'Booking',
-                'verbose_name_plural': 'Bookings',
-                'db_table': 'bookings',
-                'ordering': ['-created_at'],
+                "verbose_name": "Booking",
+                "verbose_name_plural": "Bookings",
+                "db_table": "bookings",
+                "ordering": ["-created_at"],
             },
         ),
     ]

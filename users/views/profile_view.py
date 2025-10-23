@@ -13,9 +13,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
     View and edit the current user's profile.
     Only GET, PUT, and PATCH methods are supported.
     """
+
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'put', 'patch']
+    http_method_names = ["get", "put", "patch"]
 
     def get_queryset(self):
         user = self.request.user
@@ -30,7 +31,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return User.objects.filter(id=user.id)
 
     def perform_update(self, serializer):
-        password = self.request.data.get('password')
+        password = self.request.data.get("password")
         user = serializer.save()
         if password:
             user.set_password(password)
@@ -41,8 +42,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
         operation_description="Returns the profile data of the currently authenticated user.",
         responses={
             200: openapi.Response(description="Success", schema=UserSerializer),
-            403: openapi.Response(description="Forbidden")
-        }
+            403: openapi.Response(description="Forbidden"),
+        },
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
@@ -54,8 +55,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
         responses={
             200: openapi.Response(description="Success", schema=UserSerializer),
             400: openapi.Response(description="Validation Error"),
-            403: openapi.Response(description="Forbidden")
-        }
+            403: openapi.Response(description="Forbidden"),
+        },
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -67,8 +68,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
         responses={
             200: openapi.Response(description="Success", schema=UserSerializer),
             400: openapi.Response(description="Validation Error"),
-            403: openapi.Response(description="Forbidden")
-        }
+            403: openapi.Response(description="Forbidden"),
+        },
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)

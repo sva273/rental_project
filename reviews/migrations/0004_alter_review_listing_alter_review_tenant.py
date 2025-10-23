@@ -8,20 +8,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('listings', '0004_alter_listing_landlord'),
-        ('reviews', '0003_review_is_approved'),
+        ("listings", "0004_alter_listing_landlord"),
+        ("reviews", "0003_review_is_approved"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='review',
-            name='listing',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='reviews', to='listings.listing'),
+            model_name="review",
+            name="listing",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="reviews",
+                to="listings.listing",
+            ),
         ),
         migrations.AlterField(
-            model_name='review',
-            name='tenant',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='reviews', to=settings.AUTH_USER_MODEL),
+            model_name="review",
+            name="tenant",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="reviews",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

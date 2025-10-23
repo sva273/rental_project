@@ -7,6 +7,7 @@ class IsAdminOrLandlord(BasePermission):
     - Read-only methods (GET, HEAD, OPTIONS) are allowed for any authenticated user.
     - Write methods (POST, PUT, PATCH, DELETE) are allowed only for admin or the listing owner (LANDLORD).
     """
+
     def has_permission(self, request, view):
         user = request.user
         # Allow safe methods for any authenticated user
@@ -14,7 +15,7 @@ class IsAdminOrLandlord(BasePermission):
             return user.is_authenticated
         # For unsafe methods — only admin or LANDLORD
         return user.is_authenticated and (
-            user.is_staff or user.groups.filter(name__iexact='LANDLORD').exists()
+            user.is_staff or user.groups.filter(name__iexact="LANDLORD").exists()
         )
 
     def has_object_permission(self, request, view, obj):
@@ -25,9 +26,8 @@ class IsAdminOrLandlord(BasePermission):
             return True
 
         # LANDLORD — access only to their own listings
-        if user.groups.filter(name__iexact='LANDLORD').exists():
+        if user.groups.filter(name__iexact="LANDLORD").exists():
             return obj.landlord == user
 
         # TENANT — only safe methods
         return request.method in SAFE_METHODS
-

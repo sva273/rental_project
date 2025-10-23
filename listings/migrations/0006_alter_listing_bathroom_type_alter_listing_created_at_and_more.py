@@ -8,104 +8,155 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('listings', '0005_alter_listing_parking_price_per_day_and_more'),
+        ("listings", "0005_alter_listing_parking_price_per_day_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='listing',
-            name='bathroom_type',
-            field=models.CharField(choices=[('shower', 'Shower'), ('bathtub', 'Bathtub')], default='shower', help_text='Type of bathroom (e.g., Shower or Bathtub)', max_length=20),
+            model_name="listing",
+            name="bathroom_type",
+            field=models.CharField(
+                choices=[("shower", "Shower"), ("bathtub", "Bathtub")],
+                default="shower",
+                help_text="Type of bathroom (e.g., Shower or Bathtub)",
+                max_length=20,
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, help_text='Timestamp of creation'),
+            model_name="listing",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True, help_text="Timestamp of creation"
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='daily_enabled',
-            field=models.BooleanField(default=True, help_text='Whether daily renting is allowed'),
+            model_name="listing",
+            name="daily_enabled",
+            field=models.BooleanField(
+                default=True, help_text="Whether daily renting is allowed"
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='description',
-            field=models.TextField(help_text='Detailed description of the property'),
+            model_name="listing",
+            name="description",
+            field=models.TextField(help_text="Detailed description of the property"),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='floor',
-            field=models.PositiveIntegerField(blank=True, help_text='Floor number', null=True),
+            model_name="listing",
+            name="floor",
+            field=models.PositiveIntegerField(
+                blank=True, help_text="Floor number", null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='has_balcony',
-            field=models.BooleanField(default=False, help_text='Whether the listing has a balcony'),
+            model_name="listing",
+            name="has_balcony",
+            field=models.BooleanField(
+                default=False, help_text="Whether the listing has a balcony"
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='has_elevator',
-            field=models.BooleanField(default=False, help_text='Whether the building has an elevator'),
+            model_name="listing",
+            name="has_elevator",
+            field=models.BooleanField(
+                default=False, help_text="Whether the building has an elevator"
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='has_internet',
-            field=models.BooleanField(default=False, help_text='Internet availability'),
+            model_name="listing",
+            name="has_internet",
+            field=models.BooleanField(default=False, help_text="Internet availability"),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='has_parking',
-            field=models.BooleanField(default=False, help_text='Parking availability'),
+            model_name="listing",
+            name="has_parking",
+            field=models.BooleanField(default=False, help_text="Parking availability"),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='has_terrace',
-            field=models.BooleanField(default=False, help_text='Whether the listing has a terrace'),
+            model_name="listing",
+            name="has_terrace",
+            field=models.BooleanField(
+                default=False, help_text="Whether the listing has a terrace"
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='is_active',
-            field=models.BooleanField(db_index=True, default=True, help_text='Visibility status of the listing'),
+            model_name="listing",
+            name="is_active",
+            field=models.BooleanField(
+                db_index=True,
+                default=True,
+                help_text="Visibility status of the listing",
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='is_deleted',
-            field=models.BooleanField(default=False, help_text='Soft delete flag'),
+            model_name="listing",
+            name="is_deleted",
+            field=models.BooleanField(default=False, help_text="Soft delete flag"),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='landlord',
-            field=models.ForeignKey(help_text='User who owns/published the listing', on_delete=django.db.models.deletion.PROTECT, related_name='listings', to=settings.AUTH_USER_MODEL),
+            model_name="listing",
+            name="landlord",
+            field=models.ForeignKey(
+                help_text="User who owns/published the listing",
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="listings",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='parking_price_per_day',
-            field=models.DecimalField(blank=True, decimal_places=2, help_text='Daily price for parking (optional)', max_digits=10, null=True),
+            model_name="listing",
+            name="parking_price_per_day",
+            field=models.DecimalField(
+                blank=True,
+                decimal_places=2,
+                help_text="Daily price for parking (optional)",
+                max_digits=10,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='price_per_day',
-            field=models.DecimalField(blank=True, decimal_places=2, help_text='Price per day (must be positive if daily rental is enabled)', max_digits=10, null=True),
+            model_name="listing",
+            name="price_per_day",
+            field=models.DecimalField(
+                blank=True,
+                decimal_places=2,
+                help_text="Price per day (must be positive if daily rental is enabled)",
+                max_digits=10,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='property_type',
-            field=models.CharField(choices=[('apartment', 'Apartment'), ('house', 'House'), ('studio', 'Studio')], default='apartment', help_text='Type of the property (e.g., Apartment, Studio, House)', max_length=50),
+            model_name="listing",
+            name="property_type",
+            field=models.CharField(
+                choices=[
+                    ("apartment", "Apartment"),
+                    ("house", "House"),
+                    ("studio", "Studio"),
+                ],
+                default="apartment",
+                help_text="Type of the property (e.g., Apartment, Studio, House)",
+                max_length=50,
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='rooms',
-            field=models.PositiveIntegerField(blank=True, help_text='Number of rooms', null=True),
+            model_name="listing",
+            name="rooms",
+            field=models.PositiveIntegerField(
+                blank=True, help_text="Number of rooms", null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='title',
-            field=models.CharField(help_text='Title of the listing', max_length=255),
+            model_name="listing",
+            name="title",
+            field=models.CharField(help_text="Title of the listing", max_length=255),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='updated_at',
-            field=models.DateTimeField(auto_now=True, help_text='Timestamp of last update'),
+            model_name="listing",
+            name="updated_at",
+            field=models.DateTimeField(
+                auto_now=True, help_text="Timestamp of last update"
+            ),
         ),
     ]

@@ -4,6 +4,7 @@ from .choises import RoleChoices
 
 # Create your models here.
 
+
 class User(AbstractUser):
     """
     Custom User model extending Django's AbstractUser.
@@ -23,31 +24,20 @@ class User(AbstractUser):
     - __str__: Returns the user's email.
     """
 
-    username = models.CharField(
-        max_length=30,
-        unique=False,
-        blank=True,
-        null=True
-    )
+    username = models.CharField(max_length=30, unique=False, blank=True, null=True)
     email = models.EmailField(unique=True)
     role = models.CharField(
-        max_length=20,
-        choices=RoleChoices.CHOICES,
-        default=RoleChoices.TENANT
+        max_length=20, choices=RoleChoices.CHOICES, default=RoleChoices.TENANT
     )
     date_joined = models.DateTimeField(auto_now_add=True)
 
     phone_number = models.CharField(
-        max_length=15,
-        blank=True,
-        null=True,
-        help_text="Phone number digits only"
+        max_length=15, blank=True, null=True, help_text="Phone number digits only"
     )
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
     def __str__(self):
         """Return email as string representation of the user"""
         return self.email
-

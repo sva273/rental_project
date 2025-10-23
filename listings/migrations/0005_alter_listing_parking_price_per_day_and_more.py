@@ -6,23 +6,37 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('listings', '0004_alter_listing_landlord'),
+        ("listings", "0004_alter_listing_landlord"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='listing',
-            name='parking_price_per_day',
-            field=models.DecimalField(blank=True, decimal_places=2, help_text='Parking price per day (if paid)', max_digits=10, null=True),
+            model_name="listing",
+            name="parking_price_per_day",
+            field=models.DecimalField(
+                blank=True,
+                decimal_places=2,
+                help_text="Parking price per day (if paid)",
+                max_digits=10,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='price_per_day',
-            field=models.DecimalField(blank=True, decimal_places=2, help_text='Price per day (minimum 1 day)', max_digits=10, null=True),
+            model_name="listing",
+            name="price_per_day",
+            field=models.DecimalField(
+                blank=True,
+                decimal_places=2,
+                help_text="Price per day (minimum 1 day)",
+                max_digits=10,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='listing',
-            name='views_count',
-            field=models.PositiveIntegerField(default=0, help_text='Number of views for this listing'),
+            model_name="listing",
+            name="views_count",
+            field=models.PositiveIntegerField(
+                default=0, help_text="Number of views for this listing"
+            ),
         ),
     ]

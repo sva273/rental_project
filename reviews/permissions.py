@@ -21,11 +21,9 @@ class IsAuthorOrReadOnly(BasePermission):
             return False  # Reject unauthenticated users
 
         # Restrict review creation for STAFF and LANDLORD
-        if request.method == 'POST':
-            if user.is_staff or user.groups.filter(name__iexact='LANDLORD').exists():
+        if request.method == "POST":
+            if user.is_staff or user.groups.filter(name__iexact="LANDLORD").exists():
                 return False
 
         # All other methods (GET, HEAD, OPTIONS, PUT, PATCH, DELETE) are allowed
         return True
-
-

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from bookings.models import Booking
 from bookings.validators import validate_booking_dates
 
+
 class BookingSerializer(serializers.ModelSerializer):
     """
     Serializer for the Booking model.
@@ -9,8 +10,9 @@ class BookingSerializer(serializers.ModelSerializer):
     Provides read-only fields for tenant email, listing title, and total price.
     Validates booking dates using the custom `validate_booking_dates` function.
     """
-    tenant_email = serializers.ReadOnlyField(source='tenant.email')
-    listing_title = serializers.ReadOnlyField(source='listing.title')
+
+    tenant_email = serializers.ReadOnlyField(source="tenant.email")
+    listing_title = serializers.ReadOnlyField(source="listing.title")
     total_price = serializers.ReadOnlyField()
 
     class Meta:
@@ -22,20 +24,21 @@ class BookingSerializer(serializers.ModelSerializer):
                 fields (list): List of fields included in the serialization.
                 read_only_fields (list): Fields that cannot be updated via the API.
         """
+
         model = Booking
         fields = [
-            'id',
-            'listing',
-            'listing_title',
-            'tenant',
-            'tenant_email',
-            'start_date',
-            'end_date',
-            'parking_included',
-            'status',
-            'total_price',
+            "id",
+            "listing",
+            "listing_title",
+            "tenant",
+            "tenant_email",
+            "start_date",
+            "end_date",
+            "parking_included",
+            "status",
+            "total_price",
         ]
-        read_only_fields = ['status', 'tenant', 'total_price']
+        read_only_fields = ["status", "tenant", "total_price"]
 
     def validate(self, data):
         """
@@ -52,8 +55,8 @@ class BookingSerializer(serializers.ModelSerializer):
             dict: Validated data.
         """
         validate_booking_dates(
-            start_date=data.get('start_date'),
-            end_date=data.get('end_date'),
-            use_drf=True
+            start_date=data.get("start_date"),
+            end_date=data.get("end_date"),
+            use_drf=True,
         )
         return data

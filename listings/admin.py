@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
 from .models import Listing
 
+
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
     """
@@ -15,29 +16,29 @@ class ListingAdmin(admin.ModelAdmin):
     """
 
     list_display = [
-        'id',
-        'title',
-        'landlord',
-        'city',
-        'price_per_day',
-        'daily_enabled',
-        'average_rating',
-        'is_active',
-        'created_at',
+        "id",
+        "title",
+        "landlord",
+        "city",
+        "price_per_day",
+        "daily_enabled",
+        "average_rating",
+        "is_active",
+        "created_at",
     ]
     list_filter = [
-        'city',
-        'daily_enabled',
-        'is_active',
+        "city",
+        "daily_enabled",
+        "is_active",
     ]
     list_editable = [
-        'is_active',
+        "is_active",
     ]
-    search_fields = ['title', 'description', 'city', 'country', 'street']
-    ordering = ['-created_at']
+    search_fields = ["title", "description", "city", "country", "street"]
+    ordering = ["-created_at"]
     list_per_page = 25
 
-    actions = ['activate_listings', 'deactivate_listings', 'toggle_daily_enabled']
+    actions = ["activate_listings", "deactivate_listings", "toggle_daily_enabled"]
 
     @admin.action(description="Activate selected listings")
     def activate_listings(self, request, queryset):
@@ -86,4 +87,6 @@ class ListingAdmin(admin.ModelAdmin):
             listing.daily_enabled = not listing.daily_enabled
             listing.save()
             updated += 1
-        self.message_user(request, f"Daily booking toggled for {updated} listings.", messages.INFO)
+        self.message_user(
+            request, f"Daily booking toggled for {updated} listings.", messages.INFO
+        )

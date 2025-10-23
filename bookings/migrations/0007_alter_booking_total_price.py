@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bookings', '0006_alter_booking_listing_alter_booking_tenant'),
+        ("bookings", "0006_alter_booking_listing_alter_booking_tenant"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='booking',
-            name='total_price',
-            field=models.DecimalField(blank=True, decimal_places=2, help_text='Total booking price (including parking if selected)', max_digits=12, null=True),
+            model_name="booking",
+            name="total_price",
+            field=models.DecimalField(
+                blank=True,
+                decimal_places=2,
+                help_text="Total booking price (including parking if selected)",
+                max_digits=12,
+                null=True,
+            ),
         ),
     ]

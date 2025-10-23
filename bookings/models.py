@@ -48,30 +48,26 @@ class BookingManager(models.Manager):
 
 class Booking(models.Model):
     """
-        Represents a booking of a Listing by a tenant.
+    Represents a booking of a Listing by a tenant.
 
-        Attributes:
-            listing (Listing): Related listing being booked.
-            tenant (User): Tenant who made the booking.
-            start_date (date): Booking start date.
-            end_date (date): Booking end date.
-            parking_included (bool): Whether parking is included.
-            status (str): Booking status (Pending, Confirmed, Cancelled, Rejected).
-            total_price (Decimal): Total price for the booking, including parking.
-            created_at (datetime): Timestamp of creation.
-            updated_at (datetime): Timestamp of last update.
-            is_deleted (bool): Soft-delete flag.
-        """
+    Attributes:
+        listing (Listing): Related listing being booked.
+        tenant (User): Tenant who made the booking.
+        start_date (date): Booking start date.
+        end_date (date): Booking end date.
+        parking_included (bool): Whether parking is included.
+        status (str): Booking status (Pending, Confirmed, Cancelled, Rejected).
+        total_price (Decimal): Total price for the booking, including parking.
+        created_at (datetime): Timestamp of creation.
+        updated_at (datetime): Timestamp of last update.
+        is_deleted (bool): Soft-delete flag.
+    """
 
     listing = models.ForeignKey(
-        Listing,
-        on_delete=models.PROTECT,
-        related_name='bookings'
+        Listing, on_delete=models.PROTECT, related_name="bookings"
     )
     tenant = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        related_name='bookings'
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="bookings"
     )
 
     start_date = models.DateField()
@@ -81,7 +77,7 @@ class Booking(models.Model):
     status = models.CharField(
         max_length=20,
         choices=BookingStatusChoices.CHOICES,
-        default=BookingStatusChoices.PENDING
+        default=BookingStatusChoices.PENDING,
     )
 
     total_price = models.DecimalField(
@@ -89,7 +85,7 @@ class Booking(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
-        help_text="Total booking price (including parking if selected)"
+        help_text="Total booking price (including parking if selected)",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -100,16 +96,18 @@ class Booking(models.Model):
     all_objects = models.Manager()
 
     class Meta:
-        db_table = 'bookings'
-        verbose_name = 'Booking'
-        verbose_name_plural = 'Bookings'
-        ordering = ['-created_at']
+        db_table = "bookings"
+        verbose_name = "Booking"
+        verbose_name_plural = "Bookings"
+        ordering = ["-created_at"]
 
     def __str__(self):
         """Return a human-readable string representation of the booking."""
         parking_info = " + Parking" if self.parking_included else ""
-        return (f"Booking #{self.id} — {self.listing.title} "
-                f"[{self.start_date} → {self.end_date}] ({self.status}){parking_info}")
+        return (
+            f"Booking #{self.id} — {self.listing.title} "
+            f"[{self.start_date} → {self.end_date}] ({self.status}){parking_info}"
+        )
 
     @property
     def start_datetime(self):
@@ -151,11 +149,14 @@ class Booking(models.Model):
         overlapping_bookings = Booking.all_objects.filter(
             listing=self.listing,
             status__in=[BookingStatusChoices.PENDING, BookingStatusChoices.CONFIRMED],
-            is_deleted=False
+            is_deleted=False,
         ).exclude(id=self.id)
 
         for booking in overlapping_bookings:
-            if booking.start_datetime < self.end_datetime and booking.end_datetime > self.start_datetime:
+            if (
+                booking.start_datetime < self.end_datetime
+                and booking.end_datetime > self.start_datetime
+            ):
                 raise ValidationError("The selected dates are already booked.")
 
     def calculate_total_price(self):
@@ -188,8 +189,13 @@ class Booking(models.Model):
         if self.pk:
             original = Booking.all_objects.get(pk=self.pk)
             if original.status == BookingStatusChoices.CONFIRMED:
-                if original.start_date != self.start_date or original.end_date != self.end_date:
-                    raise ValidationError("Dates cannot be modified after the booking is confirmed.")
+                if (
+                    original.start_date != self.start_date
+                    or original.end_date != self.end_date
+                ):
+                    raise ValidationError(
+                        "Dates cannot be modified after the booking is confirmed."
+                    )
         self.clean()
         self.total_price = self.calculate_total_price()
         super().save(*args, **kwargs)
@@ -213,7 +219,9 @@ class Booking(models.Model):
             ValidationError: If cancellation is not allowed.
         """
         if not self.can_cancel():
-            raise ValidationError("Cancellation is not possible less than 24 hours before check-in.")
+            raise ValidationError(
+                "Cancellation is not possible less than 24 hours before check-in."
+            )
         self.status = BookingStatusChoices.CANCELLED
         self.parking_included = False
         self.save()
@@ -225,7 +233,9 @@ class Booking(models.Model):
             ValidationError: If booking is not in Pending status.
         """
         if self.status != BookingStatusChoices.PENDING:
-            raise ValidationError("Only bookings with status 'Pending' can be confirmed.")
+            raise ValidationError(
+                "Only bookings with status 'Pending' can be confirmed."
+            )
         self.status = BookingStatusChoices.CONFIRMED
         self.save()
 

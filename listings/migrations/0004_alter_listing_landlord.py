@@ -8,14 +8,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('listings', '0003_listing_views_count'),
+        ("listings", "0003_listing_views_count"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='listing',
-            name='landlord',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='listings', to=settings.AUTH_USER_MODEL),
+            model_name="listing",
+            name="landlord",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="listings",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

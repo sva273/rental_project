@@ -22,12 +22,12 @@ def listing_created_or_updated(sender, instance, created, **kwargs):
         - If only the 'views_count' field was updated, no notification is sent.
         - Otherwise, sends an update notification via `notify_listing_updated`.
     """
-    update_fields = kwargs.get('update_fields')
+    update_fields = kwargs.get("update_fields")
 
     if created:
         notify_listing_created(instance)
     else:
         # If only the views_count field was updated, skip notification
-        if update_fields is not None and update_fields == {'views_count'}:
+        if update_fields is not None and update_fields == {"views_count"}:
             return
         notify_listing_updated(instance)

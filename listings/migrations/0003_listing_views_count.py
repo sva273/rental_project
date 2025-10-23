@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('listings', '0002_initial'),
+        ("listings", "0002_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='listing',
-            name='views_count',
-            field=models.PositiveIntegerField(default=0, help_text='Количество просмотров объявления'),
+            model_name="listing",
+            name="views_count",
+            field=models.PositiveIntegerField(
+                default=0, help_text="Количество просмотров объявления"
+            ),
         ),
     ]

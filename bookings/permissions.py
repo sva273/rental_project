@@ -8,6 +8,7 @@ class IsAdminOrBookingParticipant(BasePermission):
     - LANDLORD can manage bookings for their own listings.
     - TENANT can manage (and cancel) their own bookings.
     """
+
     def has_permission(self, request, view):
         # The user must be authenticated to access any booking-related action.
         return request.user and request.user.is_authenticated
@@ -20,11 +21,11 @@ class IsAdminOrBookingParticipant(BasePermission):
             return True
 
         # Tenants can cancel ONLY their own bookings
-        if view.action == 'cancel':
+        if view.action == "cancel":
             return obj.tenant == user
 
         # Landlords can confirm or reject bookings for their own listings
-        if view.action in ['confirm', 'reject']:
+        if view.action in ["confirm", "reject"]:
             return obj.listing.landlord == user
 
         # In all other actions (retrieve, update, etc.)

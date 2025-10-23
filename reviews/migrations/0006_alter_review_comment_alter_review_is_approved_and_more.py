@@ -7,23 +7,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reviews', '0005_alter_review_unique_together_and_more'),
+        ("reviews", "0005_alter_review_unique_together_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='review',
-            name='comment',
-            field=models.TextField(help_text='Content of the review'),
+            model_name="review",
+            name="comment",
+            field=models.TextField(help_text="Content of the review"),
         ),
         migrations.AlterField(
-            model_name='review',
-            name='is_approved',
-            field=models.BooleanField(default=False, help_text='Admin approval status'),
+            model_name="review",
+            name="is_approved",
+            field=models.BooleanField(default=False, help_text="Admin approval status"),
         ),
         migrations.AlterField(
-            model_name='review',
-            name='rating',
-            field=models.PositiveSmallIntegerField(help_text='Rating score between 1 and 5', validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)]),
+            model_name="review",
+            name="rating",
+            field=models.PositiveSmallIntegerField(
+                help_text="Rating score between 1 and 5",
+                validators=[
+                    django.core.validators.MinValueValidator(1),
+                    django.core.validators.MaxValueValidator(5),
+                ],
+            ),
         ),
     ]
