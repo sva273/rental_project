@@ -17,7 +17,7 @@ services:
 
   web:
     build:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_old
     container_name: myproject
     ports:
       - "8000:8000"
