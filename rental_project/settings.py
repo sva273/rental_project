@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 import environ
-
+import grappelli
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,6 +28,7 @@ USE_MYSQL = env.bool("MYSQL", default=False)
 
 INSTALLED_APPS = [
     # Django default apps
+    "grappelli",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -120,7 +121,10 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    Path(grappelli.__path__[0]) / "static",
+]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

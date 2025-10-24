@@ -43,6 +43,7 @@ schema_view = get_schema_view(
 
 # Основные маршруты
 urlpatterns = [
+    path("grappelli/", include("grappelli.urls")),
     path("admin/", admin.site.urls),
     path("", index, name="index"),
     path("api/v1/", include(router.urls)),

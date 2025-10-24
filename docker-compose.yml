@@ -1,14 +1,9 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
     container_name: my_db
-    environment:
-      MYSQL_DATABASE: rental_mysqldb
-      MYSQL_USER: user_sva
-      MYSQL_PASSWORD: 041002
-      MYSQL_ROOT_PASSWORD: root
+    env_file:
+      - .env
     ports:
       - "3306:3306"
     volumes:
@@ -17,18 +12,18 @@ services:
 
   web:
     build:
-      dockerfile: Dockerfile_old
+      dockerfile: Dockerfile
     container_name: myproject
     ports:
       - "8000:8000"
     depends_on:
       - db
-    environment:
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=rental_mysqldb
-      - DB_USER=user_sva
-      - DB_PASSWORD=041002
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
 
 volumes:
   db_data:
+  static_volume:

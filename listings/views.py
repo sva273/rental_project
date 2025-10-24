@@ -11,6 +11,7 @@ from listings.models import Listing
 from listings.serializers import ListingSerializer, ToggleActiveResponseSerializer
 from listings.permissions import IsAdminOrLandlord
 from analytics.services import record_listing_view
+from analytics.models import SearchHistory
 
 
 class ListingViewSet(viewsets.ModelViewSet):
@@ -135,6 +136,11 @@ class ListingViewSet(viewsets.ModelViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
+        # --- saving the search keyword ---
+        keyword = request.query_params.get("search")
+        if keyword and request.user.is_authenticated:
+            SearchHistory.objects.create(user=request.user, keyword=keyword.strip())
+
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(

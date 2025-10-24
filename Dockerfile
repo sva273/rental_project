@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 COPY . .
-#COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -16,5 +16,7 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-#CMD ["python", "manage.py", "migrate"]
-CMD ["gunicorn", "rentalproject.wsgi:application", "--bind", "0.0.0.0:8000"]
+# --- Собираем статические файлы при старте и запускаем Gunicorn ---
+CMD python manage.py collectstatic --noinput && \
+    python manage.py migrate && \
+    gunicorn rental_project.wsgi:application --bind 0.0.0.0:8000

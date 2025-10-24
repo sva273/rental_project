@@ -26,3 +26,4 @@ tzdata==2025.2
 uritemplate==4.2.0
 urllib3==2.5.0
 whitenoise==6.11.0
+django-grappelli==4.0.2
