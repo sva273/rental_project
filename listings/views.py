@@ -138,8 +138,19 @@ class ListingViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         # --- saving the search keyword ---
         keyword = request.query_params.get("search")
-        if keyword and request.user.is_authenticated:
-            SearchHistory.objects.create(user=request.user, keyword=keyword.strip())
+        user = request.user
+
+        if keyword and user.is_authenticated:
+            normalized = keyword.strip().lower()
+
+            last = (
+                SearchHistory.objects.filter(user=user)
+                .order_by("-searched_at")
+                .first()
+            )
+
+            if not last or last.keyword != normalized:
+                SearchHistory.objects.create(user=user, keyword=normalized)
 
         return super().list(request, *args, **kwargs)
 
