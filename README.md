@@ -47,12 +47,15 @@ property listings, bookings, reviews, analytics, and admin management — all de
 ## 🗂 Project Structure
 
 rental_project/
-├── manage.py                  # 🖥 Main command-line utility for managing the Django project (runserver, migrate, etc.)
-├── requirements.txt           # 📦 List of Python packages required to run the project
-├── README.md                  # 📘 Project overview, setup instructions, and usage documentation
-├── swagger.yaml               # 📄 OpenAPI/Swagger specification for documenting the REST API
-├── .gitignore                 # 🚫 Specifies files and folders to be ignored by Git version control
-├── logs/                      # 🚫 Directory for log files, excluded from Git version control
+├── manage.py                  # 🖥 Django’s main CLI utility (runserver, migrations, etc.)
+├── requirements.txt           # 📦 List of Python dependencies for the project
+├── README.md                  # 📘 Project overview, setup instructions, and usage guide
+├── swagger.yaml               # 📄 OpenAPI/Swagger specification for the REST API
+├── .gitignore                 # 🚫 Specifies files/folders excluded from Git version control
+├── logs/                      # 📁 Application log files (not tracked in Git)
+├── docker-compose.yml         # 🐳 Docker Compose configuration (orchestrates web/db services)
+├── Dockerfile                 # 🏗 Docker image build instructions for the Django app
+├── pytest.ini                 # ✅ Configuration for pytest-based test suite                  
 
 # ── Core Django Configuration ──
 ├── rental_project/            # ⚙️ Main Django project configuration package
@@ -79,85 +82,85 @@ rental_project/
 │   └── migrations/            # 🗄 Database schema migrations
 
 # ── App: Bookings ──
-├── bookings/                  # 📅 App for managing property bookings and reservations
+├── bookings/                  # 📅 Application for managing property bookings and reservations
 │   ├── __init__.py
-│   ├── admin.py               # 🛠 Admin panel configuration for bookings
-│   ├── apps.py
-│   ├── choices.py             # 📋 Enum definitions for booking statuses and types
-│   ├── models.py              # 🧩 Booking-related database models
-│   ├── permissions.py         # 🔐 Access control for booking endpoints
-│   ├── serializers.py         # 🔄 DRF serializers for booking data
-│   ├── signals.py             # 📬 Signal handlers (e.g. email notifications on status change)
-│   ├── config.py
-│   ├── validators.py
-│   ├── urls.py
-│   ├── views.py
-│   ├── tests/
-│   └── migrations/
+│   ├── admin.py               # 🛠 Django Admin panel configuration for booking models
+│   ├── apps.py                # ⚙️ Application configuration class
+│   ├── choices.py             # 📋 Enum-style constants for booking statuses and types
+│   ├── models.py              # 🧩 Database models representing bookings and related entities
+│   ├── permissions.py         # 🔐 Custom DRF permission classes for booking access control
+│   ├── serializers.py         # 🔄 Serializers for converting booking models to/from JSON
+│   ├── signals.py             # 📬 Logic triggered on model events (e.g. email after status change)
+│   ├── config.py              # ⚙️ App-specific configuration and constants
+│   ├── validators.py          # ✅ Business rule validators for booking creation/update
+│   ├── urls.py                # 🌐 API routes/endpoints for bookings
+│   ├── views.py               # 📥 Request handlers / DRF ViewSets for bookings API
+│   ├── tests/                 # 🧪 Unit and integration tests for the app
+│   └── migrations/            # 📜 Database schema migrations for bookings
 
 # ── App: Listings ──
-├── listings/                  # 🏠 App for managing property listings
+├── listings/                  # 🏠 Application for managing property listings
 │   ├── __init__.py
-│   ├── admin.py               # 🛠 Admin panel configuration for listings
-│   ├── apps.py
-│   ├── models.py              # 🧩 Listing-related database models
-│   ├── permissions.py         # 🔐 Access control for listing endpoints
-│   ├── serializers.py         # 🔄 DRF serializers for listing data
-│   ├── signals.py             # 📬 Signal handlers (e.g. auto-updates or notifications)
-│   ├── urls.py
-│   ├── views.py
-│   ├── migrations/
-│   ├── tests/
-│   └── choices/               # 📋 Field choices for listings
+│   ├── admin.py               # 🛠 Django Admin panel configuration for listing models
+│   ├── apps.py                # ⚙️ Application configuration class
+│   ├── models.py              # 🧩 Database models representing properties and related metadata
+│   ├── permissions.py         # 🔐 Custom DRF permission classes controlling access to listings
+│   ├── serializers.py         # 🔄 Converters between Listing models and REST API JSON responses
+│   ├── signals.py             # 📬 Signal handlers (e.g., post-save automation or side effects)
+│   ├── urls.py                # 🌐 API routes/endpoints for listings
+│   ├── views.py               # 📥 API views and viewsets handling CRUD operations for listings
+│   ├── migrations/            # 📜 Database schema changes for listings
+│   ├── tests/                 # 🧪 Unit and integration tests for listing features
+│   └── choices/               # 📋 Enum-style constants for field options used in listings
 │       ├── __init__.py
-│       ├── bathroom_type.py   # 🚿 Enum for bathroom types (e.g. shared, private)
-│       └── property_type.py   # 🏠 Enum for property types (e.g. apartment, house)
+│       ├── bathroom_type.py   # 🚿 Available bathroom types (shared/private)
+│       └── property_type.py   # 🏢 Housing types (apartment, studio, house, etc.)
 
 # ── App: Reviews ──
-├── reviews/                   # ⭐ App for user reviews and ratings
+├── reviews/                   # ⭐ Application for user-generated property reviews and ratings
 │   ├── __init__.py
-│   ├── admin.py               # 🛠 Admin panel configuration for reviews
-│   ├── apps.py
-│   ├── models.py              # 🧩 Review-related database models
-│   ├── permissions.py         # 🔐 Access control for review endpoints
-│   ├── serializers.py         # 🔄 DRF serializers for review data
-│   ├── signals.py             # 📬 Signal handlers (e.g. notify on approval)
-│   ├── tests.py
-│   ├── urls.py
-│   ├── views.py
-│   └── migrations/
+│   ├── admin.py               # 🛠 Django Admin configuration for managing reviews
+│   ├── apps.py               # ⚙️ Application configuration class
+│   ├── models.py              # 🧩 ORM models representing reviews and rating metadata
+│   ├── permissions.py         # 🔐 Custom permission classes controlling who can post/edit reviews
+│   ├── serializers.py         # 🔄 Serializers converting review models to/from API responses
+│   ├── signals.py             # 📬 Signal handlers (e.g., on review creation or moderation events)
+│   ├── tests.py               # 🧪 Unit and integration tests for reviews functionality
+│   ├── urls.py                # 🌐 API routes for creating, listing, and managing reviews
+│   ├── views.py               # 📥 API endpoints and viewsets for review CRUD operations
+│   └── migrations/            # 📜 Database schema migrations for the reviews app
 
 # ── App: Users ──
-├── users/                     # 👤 App for user accounts, authentication, and profiles
+├── users/                     # 👤 Application for managing user accounts, authentication, and profiles
 │   ├── __init__.py
-│   ├── admin.py               # 🛠 Admin panel configuration for users
-│   ├── apps.py
-│   ├── models.py              # 🧩 Custom user model with roles and permissions
-│   ├── choises.py             # 📋 Enum definitions for user roles/statuses
-│   ├── serializers.py         # 🔄 DRF serializers for user data
-│   ├── signals.py             # 📬 Signal handlers (e.g. welcome emails)
-│   ├── tests.py
-│   ├── urls.py
-│   ├── migrations/
-│   ├── serializers/           # 🔄 Modular serializers for user-related features
+│   ├── admin.py               # 🛠 Django Admin configuration for custom user model
+│   ├── apps.py               # ⚙️ Application configuration
+│   ├── models.py              # 🧩 Custom user model with roles, permissions, and profile fields
+│   ├── choices.py             # 📋 Enum-like constants for user roles and status types
+│   ├── serializers.py         # 🔄 Core serializers for base user operations
+│   ├── signals.py             # 📬 Signal handlers (e.g., welcome email on signup)
+│   ├── tests.py               # 🧪 Tests for user authentication and profile logic
+│   ├── urls.py                # 🌐 Public API routes for user endpoints
+│   ├── migrations/            # 📜 Database schema migrations for user models
+│   ├── serializers/           # 🔄 Modular serializers for advanced user-related logic
 │   │   ├── __init__.py
 │   │   └── serializers.py
-│   └── views/                 # 👁 Modular views for user operations
+│   └── views/                 # 👁 Modular viewsets and API endpoints
 │       ├── __init__.py
-│       ├── auth_view.py       # 🔐 Authentication logic (login, register, logout)
-│       └── profile_view.py    # 👤 Profile management and user settings
+│       ├── auth_view.py       # 🔐 Authentication: register, login, refresh, logout
+│       └── profile_view.py    # 👤 Profile retrieval & editing
 
 # ── App: Web ──
-├── web/                       # 🌐 App for frontend integration and static content
+├── web/                       # 🌐 Application for frontend integration and rendering static pages
 │   ├── __init__.py
-│   ├── admin.py               # 🛠 Admin panel configuration for web content
-│   ├── apps.py
-│   ├── models.py              # 🧩 Models for static or marketing content
-│   ├── tests.py
-│   ├── urls.py
+│   ├── admin.py               # 🛠 Django Admin configuration for marketing/static content
+│   ├── apps.py                # ⚙️ Application configuration
+│   ├── models.py              # 🧩 Models for static pages, banners, landing content, etc.
+│   ├── tests.py               # 🧪 Tests for frontend views or static content features
+│   ├── urls.py                # 🌐 Public routes for landing pages
 │   ├── views.py               # 👁 Views for rendering HTML templates
-│   ├── migrations/
-│   └── templates/             # 🖼 HTML templates for frontend pages
+│   ├── migrations/            # 📜 Database schema changes for web models (if any)
+│   └── templates/             # 🖼 HTML templates used by this app
 │       └── index.html         # 🏠 Main landing page template
 
 # ── Core Utilities ──
@@ -224,7 +227,7 @@ EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 DEFAULT_FROM_EMAIL=noreply@example.com
 
 ### 📘 API Documentation
-nteractive API docs are available at:
+interactive API docs are available at:
 
 Swagger UI: http://localhost:8000/swagger/
 
