@@ -1,5 +1,8 @@
+import django_filters
 from django.core.mail import EmailMessage
 from django.conf import settings
+
+from listings.models import Listing
 
 
 def safe_send_mail(subject, message, recipients):
@@ -40,3 +43,12 @@ def notify_listing_updated(listing):
     subject = f"Listing Updated: {listing.title}"
     message = f'Your listing "{listing.title}" has been updated.'
     safe_send_mail(subject, message, [listing.landlord.email])
+
+
+class ListingFilter(django_filters.FilterSet):
+    min_rooms = django_filters.NumberFilter(field_name="rooms", lookup_expr="gte")
+    max_rooms = django_filters.NumberFilter(field_name="rooms", lookup_expr="lte")
+
+    class Meta:
+        model = Listing
+        fields = ["property_type", "country", "city", "min_rooms", "max_rooms", "is_active"]
