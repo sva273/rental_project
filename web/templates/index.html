@@ -3,9 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    {% load static %}
+    <style>
+        /* Делает изображение большим и по центру */
+        .banner {
+            width: 100%;
+            max-height: 700px; /* или любое желаемое значение */
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
-<h1>Welcome to Rental Service!!!</h1>
-<a href="{% url 'schema-swagger-ui' %}"> Documentation</a>
+    <h1>Welcome to Rental Service!!!</h1>
+     <a href="{% url 'schema-swagger-ui' %}"> Documentation</a>
+    <img class="banner" src="{% static 'images/banner.jpg' %}" alt="Banner">
 </body>
 </html>
