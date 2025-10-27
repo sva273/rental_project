@@ -58,11 +58,13 @@ def notify_new_booking(listing_title: str, landlord_email: str, tenant_email: st
     subject = f"New Booking: {listing_title}"
     safe_send_mail(
         subject,
-        f'You have booked "{listing_title}". ' f"Please wait for confirmation.",
+        f'You have booked "{listing_title}". Please wait for confirmation.',
         [tenant_email],
     )
     safe_send_mail(
-        subject, f'Your listing "{listing_title}" has been booked.', [landlord_email]
+        subject,
+        f'Your listing "{listing_title}" has been booked.',
+        [landlord_email],
     )
 
 
@@ -74,17 +76,28 @@ def notify_status_change(
 
     Args:
         listing_title (str): Title of the listing.
-        status (str): New booking status ('confirmed', 'rejected', 'deleted').
+        status (str): New booking status ('confirmed', 'rejected').
         landlord_email (str): Email address of the listing owner.
         tenant_email (str): Email address of the tenant.
     """
     subject_map = {
         "confirmed": "Booking Confirmed",
         "rejected": "Booking Rejected",
-        "deleted": "Booking Deleted",
     }
     subject = f"{subject_map.get(status, 'Booking Update')}: {listing_title}"
     message = f'The booking for "{listing_title}" has been {status}.'
+    safe_send_mail(subject, message, [tenant_email, landlord_email])
+
+
+def notify_booking_deleted(listing_title: str, landlord_email: str, tenant_email: str):
+    """
+    Sends notification when a booking is deleted (cancellation by user).
+    """
+    subject = f"Booking Cancelled: {listing_title}"
+    message = (
+        f'The booking for "{listing_title}" has been cancelled '
+        f'(deleted by the tenant or landlord).'
+    )
     safe_send_mail(subject, message, [tenant_email, landlord_email])
 
 
