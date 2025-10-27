@@ -14,13 +14,13 @@ from .permissions import IsAdminOrBookingParticipant
 def with_booking(func):
     """
     Decorator to retrieve a Booking instance and check object permissions.
-    Args:
-        func: The view method to wrap.
+    :param func: The view method to wrap.
+
     Returns:
         The wrapped view function with `booking` argument.
     """
 
-    def wrapper(self, request, pk=None, *args, **kwargs):
+    def wrapper(self, request, *args, **kwargs):
         booking = self.get_object()
         self.check_object_permissions(request, booking)
         return func(self, request, booking, *args, **kwargs)
@@ -64,7 +64,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         if user.is_staff or user.is_superuser:
             return Booking.objects.all()
 
-        # If the user is a landlord, return bookings for their listings only
+        # If the user is landlord, return bookings for their listings only
         if user.groups.filter(name__iexact="LANDLORD").exists():
             return Booking.objects.filter(listing__landlord=user)
 
@@ -82,7 +82,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         # Set tenant as current user and status as PENDING for new bookings
         serializer.save(tenant=self.request.user, status=BookingStatusChoices.PENDING)
 
-    # --- Swagger аннотации ---
+    # --- Swagger annotation  ---
     swagger_docs = {
         "list": swagger_auto_schema(
             operation_summary="List Bookings",
@@ -193,9 +193,8 @@ class BookingViewSet(viewsets.ModelViewSet):
         """
         Cancel a booking if allowed.
 
-        Args:
-            request: The HTTP request object.
-            booking (Booking): The booking instance to cancel.
+        :param:request: The HTTP request object.
+        :param: booking (Booking): The booking instance to cancel.
 
         Returns:
             Response: Success or error message.
