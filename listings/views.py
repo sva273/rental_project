@@ -54,8 +54,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         Adds annotation 'average_rating_value' for sorting.
         """
         user = self.request.user
-        queryset = Listing.objects.filter(is_deleted=False)
-        queryset = queryset.annotate(average_rating_value=Avg("reviews__rating"))
+        queryset = Listing.objects.filter(is_deleted=False).annotate(average_rating_value=Avg("reviews__rating"))
 
         # Price filtering
         min_price = self.request.query_params.get("min_price")
@@ -69,12 +68,15 @@ class ListingViewSet(viewsets.ModelViewSet):
             pass
 
         # Role-based filtering
-        if user.groups.filter(name__iexact="LANDLORD").exists() and not user.is_staff:
-            queryset = queryset.filter(landlord=user)
-        elif not user.is_staff:
-            queryset = queryset.filter(is_active=True)
-
-        return queryset
+        if user.is_staff or user.is_superuser:
+            # Admin/Staff: see all listings
+            return queryset
+        elif user.groups.filter(name__iexact="LANDLORD").exists():
+            # Landlord: see all own listings (active or inactive)
+            return queryset.filter(landlord=user)
+        else:
+            # Tenant: see only active listings
+            return queryset.filter(is_active=True)
 
     def get_ordering(self):
         ordering = self.request.query_params.get("ordering")
