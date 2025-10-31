@@ -32,7 +32,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Rental API",
         default_version="v1",
-        description="API для управления сервисом аренды",
+        description="API for rental service management",
         contact=openapi.Contact(email="youremail@example.com"),
         license=openapi.License(name="MIT License"),
     ),
