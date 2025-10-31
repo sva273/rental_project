@@ -1,56 +1,57 @@
 from django.contrib import admin, messages
 from .models import Listing
+from bookings.models import Booking
+from reviews.models import Review
 
 
+# === Inline for Review  ===
+class ReviewInline(admin.TabularInline):
+    """Inline reviews inside the Booking inline."""
+    model = Review
+    extra = 0
+    readonly_fields = ("tenant", "rating", "comment", "created_at")
+    fields = ("tenant", "rating", "comment", "is_approved", "created_at")
+    ordering = ("-created_at",)
+    show_change_link = True
+    can_delete = False
+
+
+# === Inline for Booking ===
+class BookingInline(admin.TabularInline):
+    """Inline bookings inside the Listing admin page, with nested reviews."""
+    model = Booking
+    extra = 0
+    readonly_fields = ("tenant", "start_date", "end_date", "status", "total_price")
+    fields = ("tenant", "start_date", "end_date", "status", "total_price", "parking_included")
+    show_change_link = True
+    ordering = ("-created_at",)
+    can_delete = False
+    inlines = [ReviewInline]
+
+
+# === ListingAdmin ===
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
-    """
-    Admin interface for Listing model:
-
-    Features:
-    - Displays main fields in list view.
-    - Supports filtering by city, daily_enabled, and is_active.
-    - Allows searching by title, description, city, country, and street.
-    - Supports inline editing for is_active field.
-    - Includes bulk actions: activate, deactivate, toggle daily booking availability.
-    """
-
     list_display = [
-        "id",
-        "title",
-        "landlord",
-        "city",
-        "price_per_day",
-        "daily_enabled",
-        "average_rating",
-        "is_active",
-        "created_at",
+        "id", "title", "landlord", "city", "price_per_day", "daily_enabled",
+        "average_rating", "is_active", "created_at",
     ]
-    list_filter = [
-        "city",
-        "daily_enabled",
-        "is_active",
-    ]
-    list_editable = [
-        "is_active",
-    ]
+    list_filter = ["city", "daily_enabled", "is_active"]
+    list_editable = ["is_active"]
     search_fields = ["title", "description", "city", "country", "street"]
     ordering = ["-created_at"]
     list_per_page = 25
+    readonly_fields = ["average_rating", "reviews_count", "created_at", "updated_at"]
 
+    inlines = [BookingInline]  # Показываем бронирования с вложенными отзывами
+
+    # === Bulk actions ===
     actions = ["activate_listings", "deactivate_listings", "toggle_daily_enabled"]
 
     @admin.action(description="Activate selected listings")
     def activate_listings(self, request, queryset):
-        """
-        Bulk action to activate listings:
-        - Iterates over the selected listings.
-        - If a listing is not active, sets is_active=True and saves.
-        - Updates a counter to show how many listings were activated.
-        """
         updated = 0
         for listing in queryset:
-            # Only activate if the listing is currently inactive
             if not listing.is_active:
                 listing.is_active = True
                 listing.save()
@@ -59,15 +60,8 @@ class ListingAdmin(admin.ModelAdmin):
 
     @admin.action(description="Deactivate selected listings")
     def deactivate_listings(self, request, queryset):
-        """
-        Bulk action to deactivate listings:
-        - Iterates over the selected listings.
-        - If a listing is active, sets is_active=False and saves.
-        - Updates a counter to show how many listings were deactivated.
-        """
         updated = 0
         for listing in queryset:
-            # Only deactivate if the listing is currently active
             if listing.is_active:
                 listing.is_active = False
                 listing.save()
@@ -76,12 +70,6 @@ class ListingAdmin(admin.ModelAdmin):
 
     @admin.action(description="Toggle daily booking availability")
     def toggle_daily_enabled(self, request, queryset):
-        """
-        Bulk action to toggle daily booking availability:
-        - Iterates over selected listings.
-        - Flips the daily_enabled boolean for each listing.
-        - Updates a counter to show how many listings were updated.
-        """
         updated = 0
         for listing in queryset:
             listing.daily_enabled = not listing.daily_enabled
