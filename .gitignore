@@ -9,11 +9,13 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media
-
-# If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
-# in your Git repository. Update and uncomment the following line accordingly.
-# <django-project-name>/staticfiles/
+*.db
+media/
+staticfiles/
+logs/
+.env
+.env.local
+.env.*.local
 
 ### Django.Python Stack ###
 # Byte-compiled / optimized / DLL files
@@ -132,10 +134,9 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
-env/
 venv/
+env/
 ENV/
 env.bak/
 venv.bak/
@@ -411,3 +412,28 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,python,pycharm+all,django
+
+### Project Specific ###
+# Old/unused files
+Dockerfile_old
+*.old
+
+# Database dumps
+dump/
+*.sql
+
+# Generated Swagger file (can be regenerated)
+swagger.yaml
+
+# Seed scripts (development only)
+utils/seed_*.py
+
+# Frontend build files
+frontend/dist/
+frontend/.vite/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
