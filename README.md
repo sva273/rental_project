@@ -22,25 +22,40 @@ property listings, bookings, reviews, analytics, and admin management — all de
 
 ## ✨ Features
 
-- 🔐 User authentication (TokenAuthentication) →(landlords and tenants)
-- 🏠 Property listing management → Full CRUD operations, filtering, and pagination for property listings
-- 📅 Booking system with status tracking → Booking statuses include: pending, confirmed, cancelled; 
-- ⭐ Review and rating system → Tenants can leave reviews and ratings after completing a booking
-- 📊 Analytics module → Provides insights into bookings, revenue, and property popularity
-- 🛠 Admin panel with custom actions → Extended Django Admin functionality
-- 📄 Swagger/OpenAPI documentation → Auto-generated using drf-yasg for clear and interactive API reference
-- 📬 Email notifications via Django signals → Automated emails sent on booking creation, status updates, and new reviews
+- 🔐 **User Authentication** → Token-based authentication with role-based access control (Admin, Landlord, Tenant)
+- 🏠 **Property Listing Management** → Full CRUD operations with advanced filtering, pagination, and image optimization
+- 📅 **Booking System** → Complete booking workflow with status tracking (pending, confirmed, rejected, cancelled)
+- ⭐ **Review & Rating System** → Tenants can leave reviews after completing stays, with admin approval workflow
+- 📊 **Analytics Module** → Track user behavior, search history, and property views
+- 🔔 **In-App Notifications** → Real-time notifications for bookings, reviews, and status changes
+- 🛠 **Admin Panel** → Extended Django Admin with bulk actions and custom management tools
+- 📄 **API Documentation** → Auto-generated Swagger/OpenAPI documentation using drf-yasg
+- 📬 **Email Notifications** → Automated emails via Django signals for booking and review events
+- ⚡ **Performance Optimizations** → Redis caching, image optimization, bulk operations, and query optimization
+- 🎨 **Modern Frontend** → React + TypeScript + Vite with luxury UI design, animations, and responsive layout
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Backend:** Django, Django REST Framework
-- **Database:** MySQL (or SQLite for local dev)
-- **Auth:** Token-based authentication ('rest_framework.authentication.TokenAuthentication')
-- **Docs:** Swagger/OpenAPI (`drf-yasg`)
-- **Admin:** Django Admin with custom actions
+### Backend
+- **Framework:** Django 5.x, Django REST Framework
+- **Database:** MySQL (production) / SQLite (development)
+- **Authentication:** Token-based authentication (DRF TokenAuthentication)
+- **Caching:** Redis (production) / LocMemCache (development)
+- **Image Processing:** Pillow for automatic image optimization
+- **API Documentation:** drf-yasg (Swagger/OpenAPI)
 - **Testing:** Pytest / Django TestCase
+
+### Frontend
+- **Framework:** React 18+ with TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS with custom luxury theme
+- **State Management:** Zustand
+- **Data Fetching:** TanStack Query (React Query)
+- **Routing:** React Router
+- **Animations:** Framer Motion
+- **HTTP Client:** Axios
 
 ---
 ```
@@ -163,14 +178,43 @@ rental_project/
 │   └── templates/             # 🖼 HTML templates used by this app
 │       └── index.html         # 🏠 Main landing page template
 
-# ── Core Utilities ──
-├── __init__.py                # 📌 Root package initializer
-└── pagination.py              # 📄 Shared pagination logic for API responses
+# ── App: Core ──
+├── core/                      # 🔧 Core utilities and shared functionality
+│   ├── __init__.py            # 📌 Package initializer
+│   ├── models.py              # 🧩 Notification model for in-app notifications
+│   ├── serializers.py         # 🔄 Notification serializers
+│   ├── views.py               # 👁 Notification API endpoints
+│   ├── urls.py                # 🌐 Notification routes
+│   ├── admin.py               # 🛠 Admin configuration for notifications
+│   ├── pagination.py          # 📄 Shared pagination logic for API responses
+│   └── email.py               # 📧 Centralized email sending utilities
+
+# ── Frontend ──
+├── frontend/                  # 🎨 React frontend application
+│   ├── src/
+│   │   ├── components/        # 🧩 React components
+│   │   │   ├── layout/        # 📐 Layout components (Header, Footer, Layout)
+│   │   │   ├── listings/      # 🏠 Listing-related components
+│   │   │   ├── bookings/      # 📅 Booking components
+│   │   │   ├── reviews/       # ⭐ Review components
+│   │   │   ├── notifications/ # 🔔 Notification components
+│   │   │   └── common/        # 🔧 Shared UI components
+│   │   ├── pages/             # 📄 Page components (Home, Profile, Bookings, etc.)
+│   │   ├── services/           # 🔌 API service layer
+│   │   ├── store/             # 🗄 State management (Zustand)
+│   │   └── types/             # 📝 TypeScript type definitions
+│   ├── package.json           # 📦 Frontend dependencies
+│   ├── vite.config.ts         # ⚙️ Vite configuration
+│   ├── tailwind.config.js     # 🎨 Tailwind CSS configuration
+│   └── tsconfig.json          # 📝 TypeScript configuration
 
 # ── Utilities ──
 └── utils/                     # 🧰 General-purpose helper scripts and tools
     ├── __init__.py
-    └── generate_swagger_yaml # 🧪 Script to auto-generate Swagger/OpenAPI spec
+    ├── generate_swagger_yaml.py  # 🧪 Script to auto-generate Swagger/OpenAPI spec
+    ├── seed_users.py          # 🌱 Database seeding scripts
+    ├── seed_listings.py
+    └── seed_booking.py
 ```
 
 ---
@@ -207,6 +251,13 @@ cp ENV_EXAMPLE.txt .env
 #### Apply migrations
 
 ```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+**Note:** If you're adding the `core` app for the first time, make sure to run:
+```bash
+python manage.py makemigrations core
 python manage.py migrate
 ```
 
@@ -238,15 +289,33 @@ cd frontend
 npm install
 ```
 
+#### Configure API URL (Optional)
+
+If your backend runs on a different port, update `frontend/src/services/api.ts`:
+```typescript
+baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1'
+```
+
+Or set in `.env`:
+```env
+VITE_API_URL=http://127.0.0.1:8000/api/v1
+```
+
 #### Run development server
 
 ```bash
 npm run dev
 ```
 
-Frontend will be available at http://localhost:3000 (or http://localhost:5173 for Vite)
+Frontend will be available at http://localhost:5173 (Vite default port)
 
-See `frontend/README.md` and `frontend/SETUP.md` for detailed frontend setup instructions.
+#### Build for production
+
+```bash
+npm run build
+```
+
+The built files will be in `frontend/dist/`
 
 ### 🔐 Environment Variables
 Create a `.env` file in the root directory (copy from `ENV_EXAMPLE.txt`):
@@ -256,44 +325,100 @@ cp ENV_EXAMPLE.txt .env
 ```
 
 Then edit `.env` and define the following:
+
+**Required:**
 ```env
 DEBUG=True
 SECRET_KEY_DJANGO=your-secret-key-here-change-in-production
 ALLOWED_HOSTS=localhost,127.0.0.1
+```
+
+**Database (SQLite by default):**
+```env
 MYSQL=False  # Set to True for MySQL
+# If MYSQL=True, also set:
+# DB_NAME=rental_db
+# DB_USER=your_db_user
+# DB_PASSWORD=your_db_password
+# DB_HOST=localhost
+# DB_PORT=3306
+```
+
+**Email:**
+```env
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 DEFAULT_FROM_EMAIL=noreply@example.com
+```
+
+**Caching (Optional - for Redis):**
+```env
+USE_REDIS=False  # Set to True to use Redis
+REDIS_URL=redis://127.0.0.1:6379/1
+```
+
+**Frontend (for CORS):**
+```env
+# VITE_API_URL=http://127.0.0.1:8000/api/v1
 ```
 
 See `ENV_EXAMPLE.txt` for all available configuration options.
 
 ### 📘 API Documentation
-interactive API docs are available at:
+Interactive API docs are available at:
 
-Swagger UI: http://localhost:8000/swagger/
+- **Swagger UI:** http://localhost:8000/api/docs/swagger/
+- **ReDoc:** http://localhost:8000/api/docs/redoc/
 
-ReDoc: http://localhost:8000/redoc/
+**Note:** All API endpoints require authentication by default (`IsAuthenticated`). Public endpoints (auth, swagger) have explicit permission overrides.
 
 You can also regenerate the OpenAPI schema using:
 ```bash
-python utils/generate_swagger_yaml
+python utils/generate_swagger_yaml.py
 ```
 
 ### ✅ Running Tests
 
+Run all tests:
 ```bash
 python manage.py test
+```
+
+Or use pytest:
+```bash
+pytest
+```
+
+Run tests for a specific app:
+```bash
+python manage.py test bookings
+pytest bookings/tests/
 ```
 
 
 ---
 ## 🚢 Deployment
-- To deploy in production:
-- Set DEBUG=False
-- Use gunicorn or uvicorn with wsgi.py or asgi.py
-- Configure a production-ready database (e.g., PostgreSQL)
-- Set up static/media file handling (e.g., with WhiteNoise or S3)
-- Use a reverse proxy (e.g., Nginx)
+
+### Backend Deployment
+1. Set `DEBUG=False` in production
+2. Configure a production-ready database (PostgreSQL recommended)
+3. Set up Redis for caching (recommended for production)
+4. Use Gunicorn or Uvicorn with `wsgi.py` or `asgi.py`
+5. Configure static/media file handling (WhiteNoise, S3, or CDN)
+6. Set up a reverse proxy (Nginx)
+7. Configure proper CORS settings for your frontend domain
+8. Set secure `SECRET_KEY_DJANGO` and `ALLOWED_HOSTS`
+
+### Frontend Deployment
+1. Build the frontend: `npm run build`
+2. Serve `dist/` folder with a web server (Nginx, Apache, or CDN)
+3. Configure API URL to point to your backend
+4. Set up proper routing (SPA fallback to `index.html`)
+
+### Docker Deployment
+Use the provided `Dockerfile` and `docker-compose.yml`:
+```bash
+docker-compose up -d
+```
 
 
 ---
