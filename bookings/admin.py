@@ -101,13 +101,21 @@ class BookingAdmin(admin.ModelAdmin):
 
         Sends a success message after completion.
         """
-        updated = 0
-        for booking in queryset:
+        from django.core.cache import cache
+        
+        bookings_to_update = list(queryset)
+        for booking in bookings_to_update:
             booking.status = BookingStatusChoices.CONFIRMED
-            booking.save()
-            updated += 1
+        
+        if bookings_to_update:
+            Booking.objects.bulk_update(bookings_to_update, ['status'])
+            # Clear cache for related listings
+            listing_ids = {booking.listing_id for booking in bookings_to_update}
+            for listing_id in listing_ids:
+                cache.delete(f"listing_{listing_id}")
+        
         self.message_user(
-            request, f"{updated} bookings marked as confirmed.", messages.SUCCESS
+            request, f"{len(bookings_to_update)} bookings marked as confirmed.", messages.SUCCESS
         )
 
     @admin.action(description="Mark selected bookings as Cancelled")
@@ -121,13 +129,21 @@ class BookingAdmin(admin.ModelAdmin):
 
         Sends a warning message after completion.
         """
-        updated = 0
-        for booking in queryset:
+        from django.core.cache import cache
+        
+        bookings_to_update = list(queryset)
+        for booking in bookings_to_update:
             booking.status = BookingStatusChoices.REJECTED
-            booking.save()
-            updated += 1
+        
+        if bookings_to_update:
+            Booking.objects.bulk_update(bookings_to_update, ['status'])
+            # Clear cache for related listings
+            listing_ids = {booking.listing_id for booking in bookings_to_update}
+            for listing_id in listing_ids:
+                cache.delete(f"listing_{listing_id}")
+        
         self.message_user(
-            request, f"{updated} bookings marked as cancelled.", messages.WARNING
+            request, f"{len(bookings_to_update)} bookings marked as cancelled.", messages.WARNING
         )
 
     @admin.action(description="Remove parking from selected bookings")
@@ -141,11 +157,13 @@ class BookingAdmin(admin.ModelAdmin):
 
         Sends an info message after completion.
         """
-        updated = 0
-        for booking in queryset:
+        bookings_to_update = list(queryset)
+        for booking in bookings_to_update:
             booking.parking_included = False
-            booking.save()
-            updated += 1
+        
+        if bookings_to_update:
+            Booking.objects.bulk_update(bookings_to_update, ['parking_included'])
+        
         self.message_user(
-            request, f"Parking removed from {updated} bookings.", messages.INFO
+            request, f"Parking removed from {len(bookings_to_update)} bookings.", messages.INFO
         )

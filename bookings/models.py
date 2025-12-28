@@ -146,18 +146,18 @@ class Booking(models.Model):
         if not self.listing.daily_enabled:
             raise ValidationError("This listing does not support daily rental.")
 
-        overlapping_bookings = Booking.all_objects.filter(
+        from django.db.models import Q
+
+        overlapping = Booking.all_objects.filter(
             listing=self.listing,
             status__in=[BookingStatusChoices.PENDING, BookingStatusChoices.CONFIRMED],
             is_deleted=False,
-        ).exclude(id=self.id)
+        ).exclude(id=self.id).filter(
+            Q(start_date__lt=self.end_date) & Q(end_date__gt=self.start_date)
+        ).exists()
 
-        for booking in overlapping_bookings:
-            if (
-                booking.start_datetime < self.end_datetime
-                and booking.end_datetime > self.start_datetime
-            ):
-                raise ValidationError("The selected dates are already booked.")
+        if overlapping:
+            raise ValidationError("The selected dates are already booked.")
 
     def calculate_total_price(self):
         """

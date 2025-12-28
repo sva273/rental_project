@@ -7,6 +7,7 @@ from reviews.views import ReviewViewSet
 from analytics.views import ViewHistoryViewSet, SearchHistoryViewSet
 from users.views.auth_view import AuthViewSet
 from users.views.profile_view import ProfileViewSet
+from core.views import NotificationViewSet
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -26,6 +27,7 @@ router.register(r"view-history", ViewHistoryViewSet, basename="view-history")
 router.register(r"search-history", SearchHistoryViewSet, basename="search-history")
 router.register(r"auth", AuthViewSet, basename="auth")
 router.register(r"profile", ProfileViewSet, basename="profile")
+router.register(r"notifications", NotificationViewSet, basename="notification")
 
 # Swagger с TokenAuthentication
 schema_view = get_schema_view(

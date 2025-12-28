@@ -2,6 +2,9 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 from django.db.models import Avg
+from django.core.cache import cache
+from PIL import Image
+import os
 
 from listings.choices.property_type import PropertyTypeChoices
 from listings.choices.bathroom_type import BathroomTypeChoices
@@ -156,9 +159,56 @@ class Listing(models.Model):
     def save(self, *args, **kwargs):
         """
         Ensures validation is executed before saving the listing.
+        Optimizes images if a new image is uploaded.
         """
         self.clean()
+        
+        # Optimize image if it's being uploaded/updated
+        if self.main_image and hasattr(self.main_image, 'file'):
+            self._optimize_image()
+        
         super().save(*args, **kwargs)
+        
+        # Clear cache when listing is saved
+        cache.delete(f"listing_{self.id}")
+        cache.delete("listings_list")
+    
+    def _optimize_image(self):
+        """
+        Optimizes the uploaded image by resizing and compressing it.
+        Reduces file size while maintaining quality.
+        """
+        if not self.main_image:
+            return
+        
+        try:
+            img_path = self.main_image.path
+            img = Image.open(img_path)
+            
+            # Convert RGBA to RGB if necessary
+            if img.mode in ('RGBA', 'LA', 'P'):
+                background = Image.new('RGB', img.size, (255, 255, 255))
+                if img.mode == 'P':
+                    img = img.convert('RGBA')
+                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                img = background
+            elif img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # Resize if image is too large (max 1200px width, maintain aspect ratio)
+            max_width = 1200
+            if img.width > max_width:
+                ratio = max_width / img.width
+                new_height = int(img.height * ratio)
+                img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
+            
+            # Save optimized image with quality 85
+            img.save(img_path, 'JPEG', quality=85, optimize=True)
+        except Exception as e:
+            # Log error but don't fail save
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Failed to optimize image for listing {self.id}: {e}")
 
     def soft_delete(self):
         """

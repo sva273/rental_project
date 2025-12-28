@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.core.cache import cache
 from .models import Review
 
 
@@ -70,12 +71,47 @@ class ReviewAdmin(admin.ModelAdmin):
         - Iterates over selected reviews.
         - Only approves reviews that are currently not approved.
         - Updates a counter to show how many reviews were approved.
+        - Clears cache for affected users and listings.
         """
+        from django.core.cache import cache
+        from listings.models import Listing
+        
         updated = 0
+        affected_tenants = set()
+        affected_listings = set()
+        affected_landlords = set()
+        
+        # Pre-fetch listings to get landlord IDs
+        listing_ids = queryset.values_list('listing_id', flat=True).distinct()
+        listings = {l.id: l for l in Listing.objects.filter(id__in=listing_ids).select_related('landlord')}
+        
         for review in queryset:
             # Only approve if review is not already approved
             if not review.is_approved:
                 review.is_approved = True
                 review.save()
                 updated += 1
+                affected_tenants.add(review.tenant_id)
+                affected_listings.add(review.listing_id)
+                # Get landlord ID from pre-fetched listing
+                listing = listings.get(review.listing_id)
+                if listing and listing.landlord_id:
+                    affected_landlords.add(listing.landlord_id)
+        
+        # Clear cache for all affected users and listings
+        for tenant_id in affected_tenants:
+            cache.delete(f"reviews_queryset_{tenant_id}")
+        for landlord_id in affected_landlords:
+            cache.delete(f"reviews_queryset_{landlord_id}")
+        for listing_id in affected_listings:
+            cache.delete(f"listing_{listing_id}")
+        
+        # Try to clear all reviews cache patterns (works with django-redis)
+        try:
+            if hasattr(cache, 'delete_pattern'):
+                cache.delete_pattern("reviews_queryset_*")
+        except (AttributeError, NotImplementedError):
+            # Fallback: clear cache for all known users (limited approach for LocMemCache)
+            pass
+        
         self.message_user(request, f"{updated} review(s) approved.", messages.SUCCESS)

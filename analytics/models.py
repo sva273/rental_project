@@ -28,7 +28,6 @@ class SearchHistory(models.Model):
     searched_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        # Orders the searches by most recent first
         ordering = ["-searched_at"]
         verbose_name = "Search History"
         verbose_name_plural = "Search Histories"
@@ -62,7 +61,6 @@ class ViewHistory(models.Model):
     viewed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        # Orders the views by most recent first
         ordering = ["-viewed_at"]
         verbose_name = "View History"
         verbose_name_plural = "View Histories"
@@ -70,7 +68,7 @@ class ViewHistory(models.Model):
             "user",
             "listing",
             "viewed_at",
-        )  # prevents duplication within the same timestamp
+        )
 
     def __str__(self):
         """

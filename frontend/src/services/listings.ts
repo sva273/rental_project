@@ -22,7 +22,7 @@ export const listingsApi = {
   },
 
   // Создать объявление (только для landlord/admin)
-  createListing: async (listingData: Partial<Listing> | FormData): Promise<Listing> => {
+  createListing: async (listingData: FormData | Partial<Listing>): Promise<Listing> => {
     const { data } = await apiClient.post('/listings/', listingData)
     return data
   },

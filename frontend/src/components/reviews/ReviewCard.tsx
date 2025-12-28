@@ -12,7 +12,7 @@ const ReviewCard = ({ review, onEdit, onDelete, canEdit }: ReviewCardProps) => {
     return Array.from({ length: 5 }, (_, i) => (
       <svg
         key={i}
-        className={`w-5 h-5 ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`}
+        className={`w-6 h-6 ${i < rating ? 'text-amber-400' : 'text-gray-600'}`}
         fill="currentColor"
         viewBox="0 0 20 20"
       >
@@ -22,16 +22,16 @@ const ReviewCard = ({ review, onEdit, onDelete, canEdit }: ReviewCardProps) => {
   }
 
   return (
-    <div className="glass rounded-xl p-6 border border-white/20 shadow-lg">
+    <div className="glass-dark rounded-3xl premium-shadow p-8 luxury-border border-amber-400/30">
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center text-black font-black text-lg">
               {review.tenant_email?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div>
-              <p className="font-semibold text-gray-900">{review.tenant_email}</p>
-              <p className="text-sm text-gray-500">
+              <p className="font-bold text-white elegant-text text-lg">{review.tenant_email}</p>
+              <p className="text-sm text-gray-400 elegant-text">
                 {new Date(review.created_at).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -40,18 +40,18 @@ const ReviewCard = ({ review, onEdit, onDelete, canEdit }: ReviewCardProps) => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             {renderStars(review.rating)}
-            <span className="text-lg font-bold text-gray-900">{review.rating}.0</span>
+            <span className="text-xl font-black text-amber-400 elegant-text">{review.rating}.0</span>
           </div>
-          <p className="text-gray-700 leading-relaxed">{review.comment}</p>
+          <p className="text-gray-300 leading-relaxed elegant-text text-base">{review.comment}</p>
         </div>
         {canEdit && (onEdit || onDelete) && (
           <div className="flex gap-2 ml-4">
             {onEdit && (
               <button
                 onClick={() => onEdit(review)}
-                className="px-3 py-1.5 text-sm bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors font-medium"
+                className="px-4 py-2 text-sm luxury-gradient text-black rounded-lg hover:shadow-lg glow-effect transition-all font-bold"
               >
                 Edit
               </button>
@@ -63,7 +63,7 @@ const ReviewCard = ({ review, onEdit, onDelete, canEdit }: ReviewCardProps) => {
                     onDelete(review.id)
                   }
                 }}
-                className="px-3 py-1.5 text-sm bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors font-medium"
+                className="px-4 py-2 text-sm glass-dark text-red-400 rounded-lg hover:bg-red-500/20 transition-all font-semibold luxury-border border-red-400/30"
               >
                 Delete
               </button>

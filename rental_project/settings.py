@@ -25,6 +25,9 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])  # прописать до
 # Опциональный переключатель между базами данных
 USE_MYSQL = env.bool("MYSQL", default=False)
 
+# Опциональный переключатель для Redis кэширования
+USE_REDIS = env.bool("USE_REDIS", default=False)
+
 
 INSTALLED_APPS = [
     # Django default apps
@@ -47,6 +50,7 @@ INSTALLED_APPS = [
     "bookings.apps.BookingsConfig",
     "reviews.apps.ReviewsConfig",
     "analytics.apps.AnalyticsConfig",
+    "core.apps.CoreConfig",
     "web.apps.WebConfig",
 ]
 
@@ -141,7 +145,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_PAGINATION_CLASS": "core.pagination.StandardResultsSetPagination",
@@ -241,3 +245,29 @@ LOGGING = {
         },
     },
 }
+
+# ------------------- Cache Settings --------------------------------------------------------
+if USE_REDIS:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": env("REDIS_URL", default="redis://127.0.0.1:6379/1"),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+            "KEY_PREFIX": "rental",
+            "TIMEOUT": 300,  # 5 minutes default
+        }
+    }
+else:
+    # Fallback to local memory cache for development
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "unique-snowflake",
+            "TIMEOUT": 300,  # 5 minutes
+            "OPTIONS": {
+                "MAX_ENTRIES": 1000,
+            },
+        }
+    }

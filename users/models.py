@@ -22,6 +22,8 @@ class User(AbstractUser):
 
     Methods:
     - __str__: Returns the user's email.
+    - is_landlord: Check if user is a landlord.
+    - is_tenant: Check if user is a tenant.
     """
 
     username = models.CharField(max_length=30, unique=False, blank=True, null=True)
@@ -37,6 +39,14 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
+
+    def is_landlord(self) -> bool:
+        """Check if user is a landlord."""
+        return hasattr(self, 'role') and self.role == RoleChoices.LANDLORD
+
+    def is_tenant(self) -> bool:
+        """Check if user is a tenant."""
+        return hasattr(self, 'role') and self.role == RoleChoices.TENANT
 
     def __str__(self):
         """Return email as string representation of the user"""

@@ -2,9 +2,10 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError as DRFValidationError
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 from .models import Booking, BookingStatusChoices
 from .serializers import BookingSerializer
@@ -74,7 +75,7 @@ class BookingViewSet(viewsets.ModelViewSet):
             return queryset.all()
 
         # If the user is landlord, return bookings for their listings only
-        if hasattr(user, 'role') and user.role == 'landlord':
+        if user.is_landlord():
             return queryset.filter(listing__landlord=user)
 
         ## Otherwise, the user is a tenant; return their own bookings
@@ -86,10 +87,21 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         Args:
             serializer (BookingSerializer): The serializer instance for creating a booking.
+        Raises:
+            DRFValidationError: If validation fails (e.g., overlapping dates).
         """
-
-        # Set tenant as current user and status as PENDING for new bookings
-        serializer.save(tenant=self.request.user, status=BookingStatusChoices.PENDING)
+        try:
+            # Set tenant as current user and status as PENDING for new bookings
+            serializer.save(tenant=self.request.user, status=BookingStatusChoices.PENDING)
+        except DjangoValidationError as e:
+            # Convert Django ValidationError to DRF ValidationError
+            # Django ValidationError can have message_dict or messages
+            if hasattr(e, 'message_dict'):
+                raise DRFValidationError(e.message_dict)
+            elif hasattr(e, 'messages'):
+                raise DRFValidationError(e.messages)
+            else:
+                raise DRFValidationError(str(e))
 
     # --- Swagger annotation  ---
     swagger_docs = {
@@ -155,12 +167,6 @@ class BookingViewSet(viewsets.ModelViewSet):
     @swagger_docs["list"]
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-
-        if (
-            hasattr(request.user, 'role') and request.user.role == 'landlord'
-            and not request.user.is_staff
-        ):
-            queryset = queryset.filter(listing__landlord=request.user)
 
         page = self.paginate_queryset(queryset)
         if page is not None:

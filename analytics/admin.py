@@ -15,19 +15,10 @@ class SearchHistoryAdmin(admin.ModelAdmin):
         - Allows searching by user's email or search keyword.
     """
 
-    # Columns displayed in the admin list view
     list_display = ["user", "keyword", "searched_at"]
-
-    # Default ordering (most recent searches first)
     ordering = ["-searched_at"]
-
-    # Fields that cannot be edited in the admin
     readonly_fields = ["searched_at"]
-
-    # Filters available in the right sidebar
     list_filter = ["searched_at"]
-
-    # Fields to search by in the admin search bar
     search_fields = ["user__email", "keyword"]
 
 
@@ -44,17 +35,8 @@ class ViewHistoryAdmin(admin.ModelAdmin):
         - Allows searching by user's email or listing title.
     """
 
-    # Columns displayed in the admin list view
     list_display = ["user", "listing", "viewed_at"]
-
-    # Default ordering (most recent views first)
     ordering = ["-viewed_at"]
-
-    # Fields that cannot be edited in the admin
     readonly_fields = ["viewed_at"]
-
-    # Filters available in the right sidebar
     list_filter = ["viewed_at", "listing"]
-
-    # Fields to search by in the admin search bar
     search_fields = ["user__email", "listing__title"]

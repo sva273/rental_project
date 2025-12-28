@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.core.cache import cache
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.exceptions import ValidationError
@@ -36,19 +37,36 @@ class ReviewViewSet(viewsets.ModelViewSet):
         - Admin sees all reviews.
         - LANDLORD sees only reviews on their listings (approved only).
         - TENANT sees only their own approved reviews.
+        Uses cache for frequently accessed data.
         """
         # Handle Swagger schema generation
         if getattr(self, 'swagger_fake_view', False):
             return Review.objects.none()
         
         user = self.request.user
+        
+        # Build cache key
+        cache_key = f"reviews_queryset_{user.id if user.is_authenticated else 'anon'}"
+        
+        # Try to get from cache
+        cached_queryset = cache.get(cache_key)
+        if cached_queryset is not None:
+            return cached_queryset
+        
         queryset = Review.objects.select_related("tenant", "listing", "listing__landlord")
         if user.is_staff:
-            return queryset.all()
-        if hasattr(user, 'role') and user.role == 'landlord':
-            return queryset.filter(listing__landlord=user, is_approved=True)
-        # TENANT
-        return queryset.filter(tenant=user, is_approved=True)
+            result_queryset = queryset.all()
+        elif user.is_landlord():
+            result_queryset = queryset.filter(listing__landlord=user, is_approved=True)
+        else:
+            # TENANT
+            result_queryset = queryset.filter(tenant=user, is_approved=True)
+        
+        # Cache for 5 minutes (only for GET requests)
+        if self.request.method == 'GET':
+            cache.set(cache_key, result_queryset, 300)
+        
+        return result_queryset
 
     def perform_create(self, serializer):
         """
@@ -64,7 +82,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         # --- Prevent non-tenants from creating reviews ---
-        if user.is_staff or (hasattr(user, 'role') and user.role == 'landlord'):
+        if user.is_staff or user.is_landlord():
             raise ValidationError("Only a tenant can submit a review.")
 
         # --- Check if review already exists ---
@@ -85,6 +103,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
             )
 
         serializer.save(tenant=user, is_approved=False)
+        
+        # Clear cache when new review is created
+        cache.delete(f"reviews_queryset_{user.id}")
+        cache.delete(f"listing_{listing.id}")
 
     # --- CRUD and list methods with Swagger documentation ---
     @swagger_auto_schema(
@@ -161,5 +183,25 @@ class ReviewViewSet(viewsets.ModelViewSet):
         review = self.get_object()
         review.is_approved = True
         review.save()
+        
+        # Clear cache for tenant
+        cache.delete(f"reviews_queryset_{review.tenant.id}")
+        
+        # Clear cache for landlord
+        if review.listing.landlord_id:
+            cache.delete(f"reviews_queryset_{review.listing.landlord_id}")
+        
+        # Clear cache for listing
+        cache.delete(f"listing_{review.listing.id}")
+        
+        # Try to clear all reviews cache patterns (works with django-redis)
+        # This ensures all users see the updated review
+        try:
+            if hasattr(cache, 'delete_pattern'):
+                cache.delete_pattern("reviews_queryset_*")
+        except (AttributeError, NotImplementedError):
+            # Fallback for LocMemCache - cache will expire naturally
+            pass
+        
         serializer = self.get_serializer(review)
         return Response(serializer.data)

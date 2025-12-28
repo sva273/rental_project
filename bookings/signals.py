@@ -8,6 +8,7 @@ from .config import (
     notify_booking_dates_changed,
     notify_booking_deleted,
 )
+from core.models import Notification, NotificationType
 
 
 @receiver(pre_save, sender=Booking)
@@ -44,6 +45,14 @@ def booking_created_or_updated(sender, instance, created, **kwargs):
 
     if created:
         notify_new_booking(instance.listing.title, landlord_email, tenant_email)
+        # Create in-app notification for landlord
+        Notification.objects.create(
+            user=instance.listing.landlord,
+            notification_type=NotificationType.BOOKING_CREATED,
+            title="New Booking",
+            message=f'You have a new booking for "{instance.listing.title}" from {instance.tenant.email}',
+            related_booking=instance,
+        )
         return
 
     # Check if dates changed
@@ -58,10 +67,34 @@ def booking_created_or_updated(sender, instance, created, **kwargs):
     if instance.status != original_status:
         if instance.status == BookingStatusChoices.CONFIRMED:
             notify_status_change(instance.listing.title, "confirmed", landlord_email, tenant_email)
+            # Create in-app notification for tenant
+            Notification.objects.create(
+                user=instance.tenant,
+                notification_type=NotificationType.BOOKING_CONFIRMED,
+                title="Booking Confirmed",
+                message=f'Your booking for "{instance.listing.title}" has been confirmed!',
+                related_booking=instance,
+            )
         elif instance.status == BookingStatusChoices.REJECTED:
             notify_status_change(instance.listing.title, "rejected", landlord_email, tenant_email)
+            # Create in-app notification for tenant
+            Notification.objects.create(
+                user=instance.tenant,
+                notification_type=NotificationType.BOOKING_REJECTED,
+                title="Booking Rejected",
+                message=f'Your booking for "{instance.listing.title}" has been rejected.',
+                related_booking=instance,
+            )
         elif instance.status == BookingStatusChoices.CANCELLED:
             notify_status_change(instance.listing.title, "cancelled", landlord_email, tenant_email)
+            # Create in-app notification for landlord
+            Notification.objects.create(
+                user=instance.listing.landlord,
+                notification_type=NotificationType.BOOKING_CANCELLED,
+                title="Booking Cancelled",
+                message=f'Booking for "{instance.listing.title}" has been cancelled by {instance.tenant.email}',
+                related_booking=instance,
+            )
 
     # Check soft-delete
     original_is_deleted = getattr(instance, "_original_is_deleted", False)

@@ -1,16 +1,20 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { bookingsApi } from '../services/bookings'
+import { reviewsApi, Review } from '../services/reviews'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 import ErrorMessage from '../components/common/ErrorMessage'
 import AnimatedSection from '../components/common/AnimatedSection'
+import ReviewForm from '../components/reviews/ReviewForm'
 import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const BookingsPage = () => {
   const { isAuthenticated, user } = useAuthStore()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const [showReviewForm, setShowReviewForm] = useState<number | null>(null)
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['bookings'],
@@ -39,7 +43,44 @@ const BookingsPage = () => {
     },
   })
 
+  const { data: reviewsData } = useQuery({
+    queryKey: ['reviews'],
+    queryFn: () => reviewsApi.getReviews(),
+    enabled: isAuthenticated && (user?.role === 'tenant' || !user?.role),
+  })
+
+  const createReviewMutation = useMutation({
+    mutationFn: (data: { listing: number; rating: number; comment: string }) =>
+      reviewsApi.createReview(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reviews'] })
+      queryClient.invalidateQueries({ queryKey: ['bookings'] })
+      setShowReviewForm(null)
+    },
+  })
+
   const isLandlord = user?.role === 'landlord'
+  const isTenant = user?.role === 'tenant'
+
+  // Check if booking is completed and tenant can leave a review
+  const canLeaveReview = (booking: any) => {
+    if (!isTenant) return false
+    if (booking.status !== 'confirmed') return false
+    
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const endDate = new Date(booking.end_date)
+    endDate.setHours(0, 0, 0, 0)
+    
+    if (endDate >= today) return false // Booking hasn't ended yet
+    
+    // Check if review already exists
+    const existingReview = reviewsData?.results?.find(
+      (review: Review) => review.listing === booking.listing
+    )
+    
+    return !existingReview
+  }
 
   if (!isAuthenticated) {
     return (
@@ -226,6 +267,87 @@ const BookingsPage = () => {
                     )}
                   </div>
                 )}
+                {/* Review form for completed bookings */}
+                {isTenant && canLeaveReview(booking) && (
+                  <AnimatePresence>
+                    {showReviewForm === booking.id ? (
+                      <ReviewForm
+                        listingId={booking.listing}
+                        listingTitle={booking.listing_title}
+                        onSubmit={async (data) => {
+                          await createReviewMutation.mutateAsync(data)
+                        }}
+                        onCancel={() => setShowReviewForm(null)}
+                        isLoading={createReviewMutation.isPending}
+                        error={createReviewMutation.error ? (createReviewMutation.error as any)?.response?.data?.detail || 'Failed to create review' : undefined}
+                      />
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="mt-6 pt-6 border-t border-amber-400/20"
+                      >
+                        <motion.button
+                          onClick={() => setShowReviewForm(booking.id)}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="w-full px-8 py-4 luxury-gradient text-black rounded-xl hover:shadow-lg glow-effect transition-all font-bold"
+                        >
+                          Leave a Review
+                        </motion.button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
+                {/* Show existing review if exists */}
+                {isTenant && !canLeaveReview(booking) && booking.status === 'confirmed' && (() => {
+                  const existingReview = reviewsData?.results?.find(
+                    (review: Review) => review.listing === booking.listing
+                  )
+                  if (existingReview) {
+                    return (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-6 pt-6 border-t border-amber-400/20"
+                      >
+                        <div className="glass-dark rounded-xl p-4 luxury-border border-amber-400/30">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="flex gap-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <svg
+                                  key={star}
+                                  className={`w-5 h-5 ${
+                                    star <= existingReview.rating
+                                      ? 'text-amber-400'
+                                      : 'text-gray-500'
+                                  }`}
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                              ))}
+                            </div>
+                            <span className="text-gray-300 elegant-text font-semibold">
+                              Your Review
+                            </span>
+                          </div>
+                          <p className="text-gray-300 elegant-text">{existingReview.comment}</p>
+                          <p className="text-gray-500 text-sm mt-2 elegant-text">
+                            {new Date(existingReview.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            })}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )
+                  }
+                  return null
+                })()}
               </motion.div>
             </AnimatedSection>
           ))}

@@ -1,30 +1,9 @@
 import django_filters
-from django.core.mail import EmailMessage
-from django.conf import settings
-
+from core.email import safe_send_mail
 from listings.models import Listing
 
 
-def safe_send_mail(subject, message, recipients):
-    """
-    Safely sends an email with UTF-8 encoding.
-    Ensures the app will not crash if email sending fails.
-    Logs the error to console for debugging.
-    """
-    try:
-        email = EmailMessage(
-            subject=subject,
-            body=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=recipients,
-        )
-        email.encoding = "utf-8"
-        email.send()
-    except Exception as e:
-        print(f"[EMAIL ERROR] Failed to send email '{subject}' to {recipients}: {e}")
-
-
-def notify_listing_created(listing):
+def notify_listing_created(listing: Listing) -> None:
     """
     Sends email notification to the landlord when a new listing is created.
     """
@@ -36,7 +15,7 @@ def notify_listing_created(listing):
     safe_send_mail(subject, message, [listing.landlord.email])
 
 
-def notify_listing_updated(listing):
+def notify_listing_updated(listing: Listing) -> None:
     """
     Sends email notification to the landlord when an existing listing is updated.
     """

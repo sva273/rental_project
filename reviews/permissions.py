@@ -22,7 +22,7 @@ class IsAuthorOrReadOnly(BasePermission):
 
         # Restrict review creation for STAFF and LANDLORD
         if request.method == "POST":
-            if user.is_staff or (hasattr(user, 'role') and user.role == 'landlord'):
+            if user.is_staff or user.is_landlord():
                 return False
 
         # All other methods (GET, HEAD, OPTIONS, PUT, PATCH, DELETE) are allowed

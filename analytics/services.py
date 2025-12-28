@@ -26,7 +26,6 @@ def record_listing_view(user, listing: Listing):
     # Retrieve the most recent view by this user
     last = ViewHistory.objects.filter(user=user).order_by("-viewed_at").first()
 
-    # If no previous view exists or the last viewed listing is different from the current listing
     if not last or last.listing != listing:
         # Record a new view in the ViewHistory table
         ViewHistory.objects.create(user=user, listing=listing)

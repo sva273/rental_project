@@ -50,31 +50,57 @@ class ListingAdmin(admin.ModelAdmin):
 
     @admin.action(description="Activate selected listings")
     def activate_listings(self, request, queryset):
-        updated = 0
+        from django.core.cache import cache
+        
+        listings_to_update = []
         for listing in queryset:
             if not listing.is_active:
                 listing.is_active = True
-                listing.save()
-                updated += 1
-        self.message_user(request, f"{updated} listings activated.", messages.SUCCESS)
+                listings_to_update.append(listing)
+        
+        if listings_to_update:
+            Listing.objects.bulk_update(listings_to_update, ['is_active'])
+            # Clear cache
+            cache.delete("listings_list")
+            for listing in listings_to_update:
+                cache.delete(f"listing_{listing.id}")
+        
+        self.message_user(request, f"{len(listings_to_update)} listings activated.", messages.SUCCESS)
 
     @admin.action(description="Deactivate selected listings")
     def deactivate_listings(self, request, queryset):
-        updated = 0
+        from django.core.cache import cache
+        
+        listings_to_update = []
         for listing in queryset:
             if listing.is_active:
                 listing.is_active = False
-                listing.save()
-                updated += 1
-        self.message_user(request, f"{updated} listings deactivated.", messages.WARNING)
+                listings_to_update.append(listing)
+        
+        if listings_to_update:
+            Listing.objects.bulk_update(listings_to_update, ['is_active'])
+            # Clear cache
+            cache.delete("listings_list")
+            for listing in listings_to_update:
+                cache.delete(f"listing_{listing.id}")
+        
+        self.message_user(request, f"{len(listings_to_update)} listings deactivated.", messages.WARNING)
 
     @admin.action(description="Toggle daily booking availability")
     def toggle_daily_enabled(self, request, queryset):
-        updated = 0
-        for listing in queryset:
+        from django.core.cache import cache
+        
+        listings_to_update = list(queryset)
+        for listing in listings_to_update:
             listing.daily_enabled = not listing.daily_enabled
-            listing.save()
-            updated += 1
+        
+        if listings_to_update:
+            Listing.objects.bulk_update(listings_to_update, ['daily_enabled'])
+            # Clear cache
+            cache.delete("listings_list")
+            for listing in listings_to_update:
+                cache.delete(f"listing_{listing.id}")
+        
         self.message_user(
-            request, f"Daily booking toggled for {updated} listings.", messages.INFO
+            request, f"Daily booking toggled for {len(listings_to_update)} listings.", messages.INFO
         )

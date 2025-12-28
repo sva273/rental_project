@@ -1,7 +1,11 @@
 from datetime import date
 from calendar import monthrange
-from django.core.mail import EmailMessage
-from django.conf import settings
+from typing import List, TYPE_CHECKING
+from core.email import safe_send_mail
+from bookings.choices import BookingStatusChoices
+
+if TYPE_CHECKING:
+    from bookings.models import Booking
 
 MAX_BOOKING_MONTHS = 3
 
@@ -22,31 +26,7 @@ def get_max_booking_end_date(start_date: date) -> date:
         return start_date.replace(year=year, month=month, day=day)
 
 
-def safe_send_mail(subject: str, message: str, recipients: list):
-    """
-    Safely sends an email with UTF-8 encoding.
-    Ensures the application does not crash if email sending fails.
-    Errors are logged to the console.
-
-    Args:
-        subject (str): Email subject.
-        message (str): Email body content.
-        recipients (list): List of recipient email addresses.
-    """
-    try:
-        email = EmailMessage(
-            subject=subject,
-            body=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=recipients,
-        )
-        email.encoding = "utf-8"
-        email.send()
-    except Exception as e:
-        print(f"[EMAIL ERROR] Failed to send email '{subject}' to {recipients}: {e}")
-
-
-def notify_new_booking(listing_title: str, landlord_email: str, tenant_email: str):
+def notify_new_booking(listing_title: str, landlord_email: str, tenant_email: str) -> None:
     """
     Sends notification emails for a newly created booking.
 
@@ -70,7 +50,7 @@ def notify_new_booking(listing_title: str, landlord_email: str, tenant_email: st
 
 def notify_status_change(
     listing_title: str, status: str, landlord_email: str, tenant_email: str
-):
+) -> None:
     """
     Sends notification emails when a booking status changes.
 
@@ -81,15 +61,15 @@ def notify_status_change(
         tenant_email (str): Email address of the tenant.
     """
     subject_map = {
-        "confirmed": "Booking Confirmed",
-        "rejected": "Booking Rejected",
+        BookingStatusChoices.CONFIRMED: "Booking Confirmed",
+        BookingStatusChoices.REJECTED: "Booking Rejected",
     }
     subject = f"{subject_map.get(status, 'Booking Update')}: {listing_title}"
     message = f'The booking for "{listing_title}" has been {status}.'
     safe_send_mail(subject, message, [tenant_email, landlord_email])
 
 
-def notify_booking_deleted(listing_title: str, landlord_email: str, tenant_email: str):
+def notify_booking_deleted(listing_title: str, landlord_email: str, tenant_email: str) -> None:
     """
     Sends notification when a booking is deleted (cancellation by user).
     """
@@ -101,7 +81,7 @@ def notify_booking_deleted(listing_title: str, landlord_email: str, tenant_email
     safe_send_mail(subject, message, [tenant_email, landlord_email])
 
 
-def notify_booking_dates_changed(booking, old_start, old_end):
+def notify_booking_dates_changed(booking: "Booking", old_start: date, old_end: date) -> None:
     """
     Sends notification emails when booking dates are updated.
 

@@ -17,6 +17,8 @@ const ReviewsPage = () => {
     queryKey: ['reviews'],
     queryFn: () => reviewsApi.getReviews(),
     enabled: isAuthenticated,
+    refetchOnWindowFocus: true, // Refetch when window gains focus
+    refetchOnMount: true, // Refetch when component mounts
   })
 
   const deleteMutation = useMutation({

@@ -1,4 +1,6 @@
+import logging
 from django.db.models import Avg
+from django.core.cache import cache
 from rest_framework import viewsets, filters, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -13,6 +15,8 @@ from listings.permissions import IsAdminOrLandlord
 from analytics.services import record_listing_view
 from analytics.models import SearchHistory
 from listings.config import ListingFilter
+
+logger = logging.getLogger(__name__)
 
 
 class ListingViewSet(viewsets.ModelViewSet):
@@ -52,13 +56,34 @@ class ListingViewSet(viewsets.ModelViewSet):
         """
         Returns listings based on the user's role and optional filters.
         Adds annotation 'average_rating_value' for sorting.
+        Uses cache for frequently accessed data.
         """
         # Handle Swagger schema generation
         if getattr(self, 'swagger_fake_view', False):
             return Listing.objects.none()
         
         user = self.request.user
-        queryset = Listing.objects.filter(is_deleted=False).select_related("landlord").annotate(average_rating_value=Avg("reviews__rating"))
+        
+        # Build cache key based on user role and filters
+        cache_key = f"listings_queryset_{user.id if user.is_authenticated else 'anon'}"
+        filter_params = dict(self.request.query_params)
+        if filter_params:
+            # Convert all values to strings and sort for consistent hashing
+            sorted_params = sorted(
+                (k, tuple(v) if isinstance(v, list) else v)
+                for k, v in filter_params.items()
+            )
+            cache_key += f"_{hash(tuple(sorted_params))}"
+        
+        # Try to get from cache
+        cached_queryset = cache.get(cache_key)
+        if cached_queryset is not None:
+            return cached_queryset
+        
+        queryset = Listing.objects.filter(is_deleted=False)\
+            .select_related("landlord")\
+            .prefetch_related("reviews")\
+            .annotate(average_rating_value=Avg("reviews__rating"))
 
         # Price filtering
         min_price = self.request.query_params.get("min_price")
@@ -68,25 +93,35 @@ class ListingViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(price_per_day__gte=float(min_price))
             if max_price:
                 queryset = queryset.filter(price_per_day__lte=float(max_price))
-        except ValueError:
-            pass
+        except ValueError as e:
+            logger.warning(f"Invalid price filter: min_price={min_price}, max_price={max_price}, error={e}")
 
         # Role-based filtering
         if user.is_staff or user.is_superuser:
             # Admin/Staff: see all listings
-            return queryset
-        elif hasattr(user, 'role') and user.role == 'landlord':
+            result_queryset = queryset
+        elif user.is_landlord():
             # Landlord: see all own listings (active or inactive)
-            return queryset.filter(landlord=user)
+            result_queryset = queryset.filter(landlord=user)
         else:
             # Tenant: see only active listings
-            return queryset.filter(is_active=True)
+            result_queryset = queryset.filter(is_active=True)
+        
+        # Cache the queryset for 5 minutes (only for GET requests without complex filters)
+        if self.request.method == 'GET' and not filter_params.get('search'):
+            cache.set(cache_key, result_queryset, 300)  # 5 minutes
+        
+        return result_queryset
+        
+        # Cache the queryset for 5 minutes (only for GET requests without complex filters)
+        if self.request.method == 'GET' and not filter_params.get('search'):
+            cache.set(cache_key, result_queryset, 300)  # 5 minutes
+        
+        return result_queryset
 
     def get_ordering(self):
         ordering = self.request.query_params.get("ordering")
         if ordering:
-            if "average_rating" in ordering:
-                return [ordering]
             return [ordering]
         return super().get_ordering()
 
@@ -179,9 +214,23 @@ class ListingViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         listing = self.get_object()
         user = request.user
-        if not user.is_staff and not (hasattr(user, 'role') and user.role == 'landlord'):
+        
+        # Try to get from cache
+        cache_key = f"listing_{listing.id}"
+        cached_data = cache.get(cache_key)
+        if cached_data is not None:
+            return Response(cached_data)
+        
+        if not user.is_staff and not user.is_landlord():
             record_listing_view(user, listing)
-        return super().retrieve(request, *args, **kwargs)
+        
+        response = super().retrieve(request, *args, **kwargs)
+        
+        # Cache the response for 5 minutes
+        if response.status_code == 200:
+            cache.set(cache_key, response.data, 300)
+        
+        return response
 
     @swagger_auto_schema(
         operation_summary="Update Listing",

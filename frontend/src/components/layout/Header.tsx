@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
 import { motion } from 'framer-motion'
+import NotificationBell from '../notifications/NotificationBell'
 
 const Header = () => {
   const { isAuthenticated, logout, user } = useAuthStore()
@@ -71,6 +72,7 @@ const Header = () => {
                   Reviews
                 </Link>
                 <div className="flex items-center gap-4 pl-6 ml-6 border-l border-amber-400/20">
+                  <NotificationBell />
                   <motion.div 
                     className="hidden sm:flex items-center gap-3 px-4 py-2 glass-dark rounded-xl luxury-border"
                     whileHover={{ scale: 1.05 }}

@@ -9,12 +9,10 @@ class IsOwnerOrAdmin(BasePermission):
     """
 
     def has_permission(self, request, view):
-        # Only authenticated users are allowed to proceed
         return request.user and request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
         # Safe methods (GET, HEAD, OPTIONS) are allowed for the owner or admin
         if request.method in SAFE_METHODS:
             return request.user.is_staff or obj.user == request.user
-        # Write operations are allowed only to the owner
         return obj.user == request.user
