@@ -15,7 +15,7 @@ class IsAdminOrLandlord(BasePermission):
             return user.is_authenticated
         # For unsafe methods — only admin or LANDLORD
         return user.is_authenticated and (
-            user.is_staff or user.groups.filter(name__iexact="LANDLORD").exists()
+            user.is_staff or (hasattr(user, 'role') and user.role == 'landlord')
         )
 
     def has_object_permission(self, request, view, obj):
@@ -26,7 +26,7 @@ class IsAdminOrLandlord(BasePermission):
             return True
 
         # LANDLORD — access only to their own listings
-        if user.groups.filter(name__iexact="LANDLORD").exists():
+        if hasattr(user, 'role') and user.role == 'landlord':
             return obj.landlord == user
 
         # TENANT — only safe methods

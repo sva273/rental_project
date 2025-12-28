@@ -37,13 +37,18 @@ class ReviewViewSet(viewsets.ModelViewSet):
         - LANDLORD sees only reviews on their listings (approved only).
         - TENANT sees only their own approved reviews.
         """
+        # Handle Swagger schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return Review.objects.none()
+        
         user = self.request.user
+        queryset = Review.objects.select_related("tenant", "listing", "listing__landlord")
         if user.is_staff:
-            return Review.objects.all()
-        if user.groups.filter(name__iexact="LANDLORD").exists():
-            return Review.objects.filter(listing__landlord=user, is_approved=True)
+            return queryset.all()
+        if hasattr(user, 'role') and user.role == 'landlord':
+            return queryset.filter(listing__landlord=user, is_approved=True)
         # TENANT
-        return Review.objects.filter(tenant=user, is_approved=True)
+        return queryset.filter(tenant=user, is_approved=True)
 
     def perform_create(self, serializer):
         """
@@ -59,8 +64,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         # --- Prevent non-tenants from creating reviews ---
-        if user.is_staff or user.groups.filter(name__iexact="LANDLORD").exists():
+        if user.is_staff or (hasattr(user, 'role') and user.role == 'landlord'):
             raise ValidationError("Only a tenant can submit a review.")
+
+        # --- Check if review already exists ---
+        if Review.objects.filter(listing=listing, tenant=user).exists():
+            raise ValidationError("You have already reviewed this listing.")
 
         # --- Ensure tenant has completed a confirmed booking ---
         has_completed_booking = Booking.objects.filter(

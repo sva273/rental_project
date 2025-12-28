@@ -53,8 +53,12 @@ class ListingViewSet(viewsets.ModelViewSet):
         Returns listings based on the user's role and optional filters.
         Adds annotation 'average_rating_value' for sorting.
         """
+        # Handle Swagger schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return Listing.objects.none()
+        
         user = self.request.user
-        queryset = Listing.objects.filter(is_deleted=False).annotate(average_rating_value=Avg("reviews__rating"))
+        queryset = Listing.objects.filter(is_deleted=False).select_related("landlord").annotate(average_rating_value=Avg("reviews__rating"))
 
         # Price filtering
         min_price = self.request.query_params.get("min_price")
@@ -71,7 +75,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         if user.is_staff or user.is_superuser:
             # Admin/Staff: see all listings
             return queryset
-        elif user.groups.filter(name__iexact="LANDLORD").exists():
+        elif hasattr(user, 'role') and user.role == 'landlord':
             # Landlord: see all own listings (active or inactive)
             return queryset.filter(landlord=user)
         else:
@@ -161,6 +165,12 @@ class ListingViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
+    def perform_create(self, serializer):
+        """
+        Set landlord to current user when creating a new listing.
+        """
+        serializer.save(landlord=self.request.user)
+
     @swagger_auto_schema(
         operation_summary="Retrieve Listing",
         operation_description="TENANT sees only active listings. View is recorded.",
@@ -169,7 +179,7 @@ class ListingViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         listing = self.get_object()
         user = request.user
-        if not user.is_staff and not user.groups.filter(name__iexact="LANDLORD").exists():
+        if not user.is_staff and not (hasattr(user, 'role') and user.role == 'landlord'):
             record_listing_view(user, listing)
         return super().retrieve(request, *args, **kwargs)
 

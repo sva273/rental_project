@@ -16,16 +16,24 @@ def validate_phone_number(value):
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
-        write_only=True, required=True, validators=[validate_password]
+        write_only=True, required=False, validators=[validate_password], allow_blank=True
     )
     password2 = serializers.CharField(
-        write_only=True, required=True
+        write_only=True, required=False, allow_blank=True
     )  # для подтверждения пароля
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # При создании (POST) пароли обязательны
+        if self.instance is None:  # Creating new instance
+            self.fields['password'].required = True
+            self.fields['password2'].required = True
 
     class Meta:
         model = User
         fields = (
             "id",
+            "username",
             "email",
             "first_name",
             "last_name",
@@ -35,20 +43,32 @@ class UserSerializer(serializers.ModelSerializer):
             "password2",
         )
         extra_kwargs = {
+            "username": {"required": True},
             "first_name": {"required": True},
             "last_name": {"required": True},
         }
+    
+    def to_representation(self, instance):
+        """Remove password fields from response"""
+        data = super().to_representation(instance)
+        data.pop('password', None)
+        data.pop('password2', None)
+        return data
 
     def validate(self, attrs):
         """Validate that both passwords match."""
-        if attrs["password"] != attrs["password2"]:
-            raise serializers.ValidationError({"password": "Passwords do not match."})
+        # Only validate passwords if they are provided (during creation or password change)
+        if attrs.get("password") and attrs.get("password2"):
+            if attrs["password"] != attrs["password2"]:
+                raise serializers.ValidationError({"password": "Passwords do not match."})
         return attrs
 
     def create(self, validated_data):
         """Create a new user with a hashed password."""
-        validated_data.pop("password2")
-        password = validated_data.pop("password")
+        validated_data.pop("password2", None)
+        password = validated_data.pop("password", None)
+        if not password:
+            raise serializers.ValidationError({"password": "Password is required for registration."})
         user = User.objects.create(**validated_data)
         user.set_password(password)
         user.save()

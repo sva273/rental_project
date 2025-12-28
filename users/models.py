@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from .choises import RoleChoices
+from .choices import RoleChoices
 
 # Create your models here.
 

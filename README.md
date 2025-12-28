@@ -191,25 +191,32 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+#### Install Python dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Apply migrations
+#### Create environment file
+
+```bash
+cp ENV_EXAMPLE.txt .env
+# Edit .env and set your SECRET_KEY_DJANGO
+```
+
+#### Apply migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### 5. Create a superuser
+#### Create a superuser
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 6. Run the development server
+#### Run the development server
 
 ```bash
 python manage.py runserver
@@ -217,14 +224,48 @@ python manage.py runserver
 
 Visit http://localhost:8000/admin to access the admin panel.
 
+### 3. Frontend Setup
+
+#### Navigate to frontend directory
+
+```bash
+cd frontend
+```
+
+#### Install dependencies
+
+```bash
+npm install
+```
+
+#### Run development server
+
+```bash
+npm run dev
+```
+
+Frontend will be available at http://localhost:3000 (or http://localhost:5173 for Vite)
+
+See `frontend/README.md` and `frontend/SETUP.md` for detailed frontend setup instructions.
+
 ### 🔐 Environment Variables
-Create a .env file in the root directory and define the following:
+Create a `.env` file in the root directory (copy from `ENV_EXAMPLE.txt`):
+
+```bash
+cp ENV_EXAMPLE.txt .env
+```
+
+Then edit `.env` and define the following:
+```env
 DEBUG=True
-SECRET_KEY=your-secret-key
+SECRET_KEY_DJANGO=your-secret-key-here-change-in-production
 ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=postgres://user:password@localhost:5432/dbname
+MYSQL=False  # Set to True for MySQL
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 DEFAULT_FROM_EMAIL=noreply@example.com
+```
+
+See `ENV_EXAMPLE.txt` for all available configuration options.
 
 ### 📘 API Documentation
 interactive API docs are available at:

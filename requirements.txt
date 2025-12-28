@@ -27,3 +27,4 @@ uritemplate==4.2.0
 urllib3==2.5.0
 whitenoise==6.11.0
 django-grappelli==4.0.2
+django-cors-headers==4.3.1

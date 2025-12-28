@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from django.db.models import Count, F
+from django.db.models import Count, F, Avg
 
 from analytics.models import ViewHistory, SearchHistory
 from analytics.serializers import ViewHistorySerializer, SearchHistorySerializer
@@ -50,6 +50,10 @@ class ViewHistoryViewSet(
         Returns the user's view history.
         If the user is not authenticated, returns an empty queryset.
         """
+        # Handle Swagger schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return ViewHistory.objects.none()
+        
         user = self.request.user
         if not user.is_authenticated:
             return ViewHistory.objects.none()
@@ -78,8 +82,9 @@ class ViewHistoryViewSet(
             ViewHistory.objects.create(user=user, listing=listing)
 
             # Increment the listing's view count
-            listing.views_count = F("views_count") + 1
-            listing.save(update_fields=["views_count"])
+            Listing.objects.filter(pk=listing.pk).update(
+                views_count=F("views_count") + 1
+            )
 
             # Trim the oldest records if history exceeds MAX_HISTORY
             excess = ViewHistory.objects.filter(user=user).count() - MAX_HISTORY
@@ -157,9 +162,14 @@ class ViewHistoryViewSet(
         """
         Returns the top 50 popular listings based on view counts.
         """
-        listings = Listing.objects.filter(is_deleted=False).order_by("-views_count")[
-            :50
-        ]
+        listings = (
+            Listing.objects
+            .filter(is_deleted=False, is_active=True)
+            .select_related("landlord")
+            .prefetch_related("reviews")
+            .annotate(avg_rating=Avg("reviews__rating"))
+            .order_by("-views_count")[:50]
+        )
         serializer = ListingSerializer(listings, many=True)
         return Response(serializer.data)
 
@@ -188,6 +198,10 @@ class SearchHistoryViewSet(
         """
         Returns the search history for the current user.
         """
+        # Handle Swagger schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return SearchHistory.objects.none()
+        
         user = self.request.user
         if not user.is_authenticated:
             return SearchHistory.objects.none()

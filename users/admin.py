@@ -48,17 +48,24 @@ class UserAdmin(BaseUserAdmin):
     list_per_page = 25
 
     fieldsets = (
-        ("Main Information", {"fields": ("email", "password", "first_name", "last_name", "role")}),
+        (None, {"fields": ("email", "password")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "phone_number")}),
+        ("Role", {"fields": ("role",)}),
         ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
-        ("Dates", {"fields": ("last_login", "date_joined")}),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
     )
 
     add_fieldsets = (
-        (None, {"classes": ("wide",),
-                "fields": ("email", "password1", "password2", "first_name", "last_name", "role", "is_active", "is_staff")}),
+        (None, {
+            "classes": ("wide",),
+            "fields": ("email", "password1", "password2", "first_name", "last_name", "phone_number", "role", "is_active", "is_staff"),
+        }),
     )
 
     readonly_fields = ("date_joined", "last_login")
+    
+    # Use email as the username field
+    ordering = ("email",)
 
     inlines = [BookingInline, ListingInline, ReviewInline]
 

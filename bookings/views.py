@@ -23,6 +23,8 @@ def with_booking(func):
     def wrapper(self, request, *args, **kwargs):
         booking = self.get_object()
         self.check_object_permissions(request, booking)
+        # Remove pk from kwargs to avoid passing it to the function
+        kwargs.pop('pk', None)
         return func(self, request, booking, *args, **kwargs)
 
     wrapper.__name__ = func.__name__
@@ -54,22 +56,29 @@ class BookingViewSet(viewsets.ModelViewSet):
         Returns:
             QuerySet: Bookings visible to the current user.
         """
+        # Handle Swagger schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return Booking.objects.none()
+        
         user = self.request.user
 
         # If the user is not authenticated, return an empty queryset
         if not user.is_authenticated:
             return Booking.objects.none()
 
+        # Optimize queries with select_related
+        queryset = Booking.objects.select_related("tenant", "listing", "listing__landlord")
+
         # If the user is admin or staff, return all bookings
         if user.is_staff or user.is_superuser:
-            return Booking.objects.all()
+            return queryset.all()
 
         # If the user is landlord, return bookings for their listings only
-        if user.groups.filter(name__iexact="LANDLORD").exists():
-            return Booking.objects.filter(listing__landlord=user)
+        if hasattr(user, 'role') and user.role == 'landlord':
+            return queryset.filter(listing__landlord=user)
 
         ## Otherwise, the user is a tenant; return their own bookings
-        return Booking.objects.filter(tenant=user)
+        return queryset.filter(tenant=user)
 
     def perform_create(self, serializer):
         """
@@ -148,7 +157,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         queryset = self.filter_queryset(self.get_queryset())
 
         if (
-            request.user.groups.filter(name__iexact="LANDLORD").exists()
+            hasattr(request.user, 'role') and request.user.role == 'landlord'
             and not request.user.is_staff
         ):
             queryset = queryset.filter(listing__landlord=request.user)

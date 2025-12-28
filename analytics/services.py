@@ -32,8 +32,9 @@ def record_listing_view(user, listing: Listing):
         ViewHistory.objects.create(user=user, listing=listing)
 
         # Increment the listing's views_count atomically
-        listing.views_count = F("views_count") + 1
-        listing.save(update_fields=["views_count"])
+        Listing.objects.filter(pk=listing.pk).update(
+            views_count=F("views_count") + 1
+        )
 
         # Calculate how many old entries exceed the MAX_HISTORY limit
         excess = ViewHistory.objects.filter(user=user).count() - MAX_HISTORY

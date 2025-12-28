@@ -43,14 +43,3 @@ class ReviewSerializer(serializers.ModelSerializer):
         if not (1 <= value <= 5):
             raise serializers.ValidationError("Rating must be between 1 and 5.")
         return value
-
-    def create(self, validated_data):
-        """
-        Override create() to automatically assign the current user as tenant.
-
-        Behavior:
-        - Sets `tenant` to the current authenticated user from the request context.
-        - Calls the parent create() method to save the instance.
-        """
-        validated_data["tenant"] = self.context["request"].user
-        return super().create(validated_data)
